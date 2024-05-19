@@ -4,6 +4,8 @@ from dspy.teleprompt import BootstrapFewShot
 
 from dspy.evaluate.metrics import answer_exact_match
 
+from dspy.evaluate.evaluate import Evaluate
+from dsp.utils import deduplicate
 
 # Initialize the language model and retrieval model
 
@@ -26,7 +28,9 @@ for split in ['train', 'test']:
 
 train_example = dataset_train[0]
 
-train_sample =  dataset_test[:10]
+train_sample =  dataset_train[:10]
+
+test_sample = dataset_test[:10]
 
 # print(f"Question: {train_example.question}")
 # print(f"Answer: {train_example.answer}")
@@ -75,7 +79,7 @@ class GenerateAnswer(dspy.Signature):
     answer = dspy.OutputField(desc="Detailed output with code if required")
 
 class RAG(dspy.Module):
-    def __init__(self, num_passages=3):
+    def __init__(self, num_passages=4):
         super().__init__()
 
         self.retrieve = dspy.Retrieve(k=num_passages)
@@ -94,15 +98,15 @@ def validate_context_and_answer(example, pred, trace=None):
 
 # training 
 
-config = dict(max_bootstrapped_demos=3, max_labeled_demos=3)
+# config = dict(max_bootstrapped_demos=5, max_labeled_demos=5)
 
-teleprompter = BootstrapFewShot(metric=validate_context_and_answer,**config)
-compiled_rag = teleprompter.compile(RAG(), trainset=train_sample)
+# teleprompter = BootstrapFewShot(metric=validate_context_and_answer,**config)
+# compiled_rag = teleprompter.compile(RAG(), trainset=train_sample)
 
 
-compiled_rag.save("custom1.json")
+# compiled_rag.save("custom1.json")
 
-# loading the model 
+# # loading the model 
 
 model = RAG()
 
@@ -111,3 +115,12 @@ model.load('custom1.json')
 answer = model("How to resize an image in C++ give me code ")
 
 print(answer)
+
+lm.inspect_history(n=3)
+
+# # Set up the `evaluate_on_hotpotqa` function. We'll use this many times below.
+# evaluate_on_hotpotqa = Evaluate(devset=test_sample, num_threads=24, display_progress=True, display_table=5)
+
+# # Evaluate the `compiled_rag` program with the `answer_exact_match` metric.
+# metric = answer_exact_match
+# evaluate_on_hotpotqa(compiled_rag, metric=metric)
