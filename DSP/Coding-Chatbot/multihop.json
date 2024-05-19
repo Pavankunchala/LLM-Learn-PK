@@ -1,0 +1,98 @@
+{
+  "generate_query[0]": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "question": "Change the following loop so that it prints out the numbers from 10 to 1 in descending order.\nfor i in range(1, 11):\n    print(i)",
+        "answer": "for i in range(10, 0, -1):\n    print(i)"
+      },
+      {
+        "question": "Use a loop in Java to print out the squares of numbers from 1 to 10.\n",
+        "answer": "for (int i = 1; i <= 10; i++) {\n    System.out.println(i * i);\n}"
+      },
+      {
+        "question": "Help debug this code snippet by adding comments with the appropriate error messages.\ndef greetings(name):\nnum = 5\nmessage = \"Hello, \" + name + \"!\"\nreturn message",
+        "answer": "def greetings(name):\n    # assert name is a string\n    assert isinstance(name, str), \"name must be a string\"\n    num = 5\n    # \"message\" variable should be defined before using it \n    message = \"Hello, \" + name + \"!\"\n    return message"
+      },
+      {
+        "question": "Create an algorithm in JavaScript to find the closest pair of points from a given set of points.\nlet points = [[2, 0], [4, 4], [-2, 2], [-3, -4], [4, -2]];",
+        "answer": "\/\/ algorithm to find closest pair of points \n\/\/ uses divide and conquer approach \nconst closestPair = (points) => { \n  \/\/ base case: two or fewer points\n  if (points.length <= 2) {\n    return points;\n  }\n\n  \/\/ divide\n  const middle = Math.floor(points.length \/ 2);\n  const left = points.slice(0, middle);\n  const right = points.slice(middle);\n  \n  \/\/ conquer\n  const leftPoints = closestPair(left);\n  const rightPoints = closestPair(right);\n\n  const closestPair = getClosestPair(leftPoints, rightPoints);\n\n  \/\/ combine\n  return closestPair;\n}\n \n\/\/ get closest pair between two sets of points\nconst getClosestPair = (leftPoints, rightPoints) => {\n  \/\/ calculating the minimum distance\n  let minDist = getDistance(leftPoints[0], rightPoints[0]);\n  let closestPair = [leftPoints[0], rightPoints[0]];\n  \n  for (let i = 0; i < leftPoints.length; i++) {\n    for (let j = 0; j < rightPoints.length; j++) {\n      let dist = getDistance(leftPoints[i], rightPoints[j]);\n      if (dist < minDist) {\n        minDist = dist;\n        closestPair = [leftPoints[i], rightPoints[j]];\n      }\n    }\n  }\n \n  \/\/ return the minimum distance and its pair\n  return closestPair;\n}\n \n\/\/ calculate the Euclidean distance between two points\nconst getDistance = (point1, point2) => {\n  let xDist = Math.abs(point2[0] - point1[0]);\n  let yDist = Math.abs(point2[1] - point1[1]);\n \n  return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));\n}\n\n\/\/ testing our function \nlet points = [[2, 0], [4, 4], [-2, 2], [-3, -4], [4, -2]];\nlet closestPoints = closestPair(points);\nconsole.log(closestPoints);\n\/\/Output: [[-2, 2], [2, 0]]"
+      },
+      {
+        "question": "Write an SQL query that returns the 5 most popular books in the library.\nSELECT * FROM libraryBook",
+        "answer": "SELECT bookID, bookTitle, COUNT(*) AS Count \nFROM libraryBook \nGROUP BY bookID, bookTitle \nORDER BY Count DESC \nLIMIT 5;"
+      }
+    ],
+    "signature_instructions": "Write a simple search query that will help answer a complex question.",
+    "signature_prefix": "Query:",
+    "extended_signature_instructions": "Write a simple search query that will help answer a complex question.",
+    "extended_signature_prefix": "Query:"
+  },
+  "generate_query[1]": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "question": "Create an algorithm in JavaScript to find the closest pair of points from a given set of points.\nlet points = [[2, 0], [4, 4], [-2, 2], [-3, -4], [4, -2]];",
+        "answer": "\/\/ algorithm to find closest pair of points \n\/\/ uses divide and conquer approach \nconst closestPair = (points) => { \n  \/\/ base case: two or fewer points\n  if (points.length <= 2) {\n    return points;\n  }\n\n  \/\/ divide\n  const middle = Math.floor(points.length \/ 2);\n  const left = points.slice(0, middle);\n  const right = points.slice(middle);\n  \n  \/\/ conquer\n  const leftPoints = closestPair(left);\n  const rightPoints = closestPair(right);\n\n  const closestPair = getClosestPair(leftPoints, rightPoints);\n\n  \/\/ combine\n  return closestPair;\n}\n \n\/\/ get closest pair between two sets of points\nconst getClosestPair = (leftPoints, rightPoints) => {\n  \/\/ calculating the minimum distance\n  let minDist = getDistance(leftPoints[0], rightPoints[0]);\n  let closestPair = [leftPoints[0], rightPoints[0]];\n  \n  for (let i = 0; i < leftPoints.length; i++) {\n    for (let j = 0; j < rightPoints.length; j++) {\n      let dist = getDistance(leftPoints[i], rightPoints[j]);\n      if (dist < minDist) {\n        minDist = dist;\n        closestPair = [leftPoints[i], rightPoints[j]];\n      }\n    }\n  }\n \n  \/\/ return the minimum distance and its pair\n  return closestPair;\n}\n \n\/\/ calculate the Euclidean distance between two points\nconst getDistance = (point1, point2) => {\n  let xDist = Math.abs(point2[0] - point1[0]);\n  let yDist = Math.abs(point2[1] - point1[1]);\n \n  return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));\n}\n\n\/\/ testing our function \nlet points = [[2, 0], [4, 4], [-2, 2], [-3, -4], [4, -2]];\nlet closestPoints = closestPair(points);\nconsole.log(closestPoints);\n\/\/Output: [[-2, 2], [2, 0]]"
+      },
+      {
+        "question": "Write an SQL query that returns the 5 most popular books in the library.\nSELECT * FROM libraryBook",
+        "answer": "SELECT bookID, bookTitle, COUNT(*) AS Count \nFROM libraryBook \nGROUP BY bookID, bookTitle \nORDER BY Count DESC \nLIMIT 5;"
+      },
+      {
+        "question": "Use a loop in Java to print out the squares of numbers from 1 to 10.\n",
+        "answer": "for (int i = 1; i <= 10; i++) {\n    System.out.println(i * i);\n}"
+      },
+      {
+        "question": "Help debug this code snippet by adding comments with the appropriate error messages.\ndef greetings(name):\nnum = 5\nmessage = \"Hello, \" + name + \"!\"\nreturn message",
+        "answer": "def greetings(name):\n    # assert name is a string\n    assert isinstance(name, str), \"name must be a string\"\n    num = 5\n    # \"message\" variable should be defined before using it \n    message = \"Hello, \" + name + \"!\"\n    return message"
+      },
+      {
+        "question": "Change the following loop so that it prints out the numbers from 10 to 1 in descending order.\nfor i in range(1, 11):\n    print(i)",
+        "answer": "for i in range(10, 0, -1):\n    print(i)"
+      }
+    ],
+    "signature_instructions": "Write a simple search query that will help answer a complex question.",
+    "signature_prefix": "Query:",
+    "extended_signature_instructions": "Write a simple search query that will help answer a complex question.",
+    "extended_signature_prefix": "Query:"
+  },
+  "retrieve": {
+    "k": 3
+  },
+  "generate_answer": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "question": "Change the following loop so that it prints out the numbers from 10 to 1 in descending order.\nfor i in range(1, 11):\n    print(i)",
+        "answer": "for i in range(10, 0, -1):\n    print(i)"
+      },
+      {
+        "question": "Write an SQL query that returns the 5 most popular books in the library.\nSELECT * FROM libraryBook",
+        "answer": "SELECT bookID, bookTitle, COUNT(*) AS Count \nFROM libraryBook \nGROUP BY bookID, bookTitle \nORDER BY Count DESC \nLIMIT 5;"
+      },
+      {
+        "question": "Use a loop in Java to print out the squares of numbers from 1 to 10.\n",
+        "answer": "for (int i = 1; i <= 10; i++) {\n    System.out.println(i * i);\n}"
+      },
+      {
+        "question": "Create an algorithm in JavaScript to find the closest pair of points from a given set of points.\nlet points = [[2, 0], [4, 4], [-2, 2], [-3, -4], [4, -2]];",
+        "answer": "\/\/ algorithm to find closest pair of points \n\/\/ uses divide and conquer approach \nconst closestPair = (points) => { \n  \/\/ base case: two or fewer points\n  if (points.length <= 2) {\n    return points;\n  }\n\n  \/\/ divide\n  const middle = Math.floor(points.length \/ 2);\n  const left = points.slice(0, middle);\n  const right = points.slice(middle);\n  \n  \/\/ conquer\n  const leftPoints = closestPair(left);\n  const rightPoints = closestPair(right);\n\n  const closestPair = getClosestPair(leftPoints, rightPoints);\n\n  \/\/ combine\n  return closestPair;\n}\n \n\/\/ get closest pair between two sets of points\nconst getClosestPair = (leftPoints, rightPoints) => {\n  \/\/ calculating the minimum distance\n  let minDist = getDistance(leftPoints[0], rightPoints[0]);\n  let closestPair = [leftPoints[0], rightPoints[0]];\n  \n  for (let i = 0; i < leftPoints.length; i++) {\n    for (let j = 0; j < rightPoints.length; j++) {\n      let dist = getDistance(leftPoints[i], rightPoints[j]);\n      if (dist < minDist) {\n        minDist = dist;\n        closestPair = [leftPoints[i], rightPoints[j]];\n      }\n    }\n  }\n \n  \/\/ return the minimum distance and its pair\n  return closestPair;\n}\n \n\/\/ calculate the Euclidean distance between two points\nconst getDistance = (point1, point2) => {\n  let xDist = Math.abs(point2[0] - point1[0]);\n  let yDist = Math.abs(point2[1] - point1[1]);\n \n  return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));\n}\n\n\/\/ testing our function \nlet points = [[2, 0], [4, 4], [-2, 2], [-3, -4], [4, -2]];\nlet closestPoints = closestPair(points);\nconsole.log(closestPoints);\n\/\/Output: [[-2, 2], [2, 0]]"
+      },
+      {
+        "question": "Help debug this code snippet by adding comments with the appropriate error messages.\ndef greetings(name):\nnum = 5\nmessage = \"Hello, \" + name + \"!\"\nreturn message",
+        "answer": "def greetings(name):\n    # assert name is a string\n    assert isinstance(name, str), \"name must be a string\"\n    num = 5\n    # \"message\" variable should be defined before using it \n    message = \"Hello, \" + name + \"!\"\n    return message"
+      }
+    ],
+    "signature_instructions": "Answer questions with detailed answers and code .",
+    "signature_prefix": "Answer:",
+    "extended_signature_instructions": "Answer questions with detailed answers and code .",
+    "extended_signature_prefix": "Answer:"
+  }
+}
