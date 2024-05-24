@@ -1,0 +1,98 @@
+{
+  "generate_query[0]": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "question": "I have a 5 month old baby who is very congested with a terrible cough. Its rattly\/raspy and croupy sounding cough. She started choking on her coughs and the mucous that has come up. She also has a fever and runny nose. Should i take her to urgent care?",
+        "answer": "Thank you for using Chat Doctor. I would suggest that you see your doctor. Your baby maybe having bronchiolitis which is a lung infection common to your kids age. It is commonly caused by a virus. Albuterol via nebulization should be utilized in order to alleviate the wheezing and also help with the congestion. A decongestant can also be used for the colds. Also, it would also advise doing a chest X-ray in order to rule out other diseases (ex. pneumonia)sincerely, Mark RosarioGeneral pediatrics\/Pediatric Pulmonology"
+      },
+      {
+        "question": "Almost everytime I eat, it burns when I swallow. Not in my throat but in my chest. It burns all the way down. It helps a lil if I drink water after I swallow. I wake up a lot in the middle of the night with heartburn so I chew some tums and it helps for the most part. Why is it so painful when I eat?",
+        "answer": "Thanks for your question on Chat Doctor. I can understand your concern. In my opinion, you are mostly having HERD (gastroesophageal reflux disease). It is due to laxity of gastroesophageal sphincter. Because of this the acid of the stomach tends to come up in the esophagus and cause burning in chest. So follow these steps for better symptomatic relief. 1. Avoid stress and tension. 2. Avoid hot and spicy food. Avoid junk food. Avoid large meals, instead take frequent small meals. 3. Take proton pump inhibitors and prokinetic Chat Doctor.  4. Keep 2 - 3 pillows under head in the bed to prevent reflux. 5. Quit smoking and alcohol if you have these habits. Lose weight if you are obese. Don't worry, you will be alright with all these. Hope I have solved your query. I will be happy to help you further. Wish you good health. Thanks."
+      },
+      {
+        "question": "Hi, I had a subarachnoid bleed and coiling of brain aneurysm last year. I am having some major bilateral temple pain along with numbness that comes and goes in my left arm\/hand\/fingers. I have had headaches since the aneurysm, but this is different. Also, my moods have been horrible for the past few weeks.",
+        "answer": "Aneurysm in brain causes headache due to compression of pain sensitive structure in brain. But pain is usually unilateral not bilateral. This pain will not radiate in both upper limb. Bilateral upper limb pain may be due to cervical spondylosis or other causes. You have anxiety of aneurysm, so due to anxiety your mood is horrible because aneurysm does not cause horrible mood change. So your headache may be chronic tension type headache. You may relieve by antianxiety Chat Doctor."
+      },
+      {
+        "question": "lump under left nipple and stomach pain (male) Hi,I have recently noticed a few weeks ago a lump under my nipple, it hurts to touch and is about the size of a quarter. Also I have bern experiencing stomach pains that prevent me from eating. I immediatly feel full and have extreme pain. Please help",
+        "answer": "HI. You have two different problems. The lump under the nipple should be removed, biopsied. This will help you to get rid of the disease, and you get a diagnosis. Second problem looks a bit serious one"
+      },
+      {
+        "question": "hi, i have been recently diagnosed with H pylori.. i have been give the triple treatment of calithramycin, amoxxicilin and omeprazole.. is dis something very serious and does this have some long term implications etc.can u plz give some detailed information about Hpylori. thnx",
+        "answer": "HiT hanks for choosing Chat Doctor for your query. I appreciate your concern towards H pylori infection which normally causes break in the lining of the stomach (peptic ulcer). H pylori is an exceptional bacterium which can survive in the acidic environment of the stomach producing tissue damage result in ulcer. Since this is a bacterial infection, hence antibiotics are used for 2 weeks to kill H pylori. Along with antibiotics Omeprazole is given for a period of 4-6 weeks to suppress the acid production and to increase the healing process of the ulcer. It is not a serious condition, usually triple treatment is sufficient to cure this condition. You must avoid taking Alcohol, hot and spicy foods, NSAID painkiller, smoking, caffeine, carbonated sweetened soft Chat Doctor. I hope all your doubts have been clarified in a simple language,Feedback in this regard is highly appreciated. Take care"
+      }
+    ],
+    "signature_instructions": "Write a simple search query that will help answer a complex question.",
+    "signature_prefix": "Query:",
+    "extended_signature_instructions": "Write a simple search query that will help answer a complex question.",
+    "extended_signature_prefix": "Query:"
+  },
+  "generate_query[1]": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "question": "lump under left nipple and stomach pain (male) Hi,I have recently noticed a few weeks ago a lump under my nipple, it hurts to touch and is about the size of a quarter. Also I have bern experiencing stomach pains that prevent me from eating. I immediatly feel full and have extreme pain. Please help",
+        "answer": "HI. You have two different problems. The lump under the nipple should be removed, biopsied. This will help you to get rid of the disease, and you get a diagnosis. Second problem looks a bit serious one"
+      },
+      {
+        "question": "Hi, I had a subarachnoid bleed and coiling of brain aneurysm last year. I am having some major bilateral temple pain along with numbness that comes and goes in my left arm\/hand\/fingers. I have had headaches since the aneurysm, but this is different. Also, my moods have been horrible for the past few weeks.",
+        "answer": "Aneurysm in brain causes headache due to compression of pain sensitive structure in brain. But pain is usually unilateral not bilateral. This pain will not radiate in both upper limb. Bilateral upper limb pain may be due to cervical spondylosis or other causes. You have anxiety of aneurysm, so due to anxiety your mood is horrible because aneurysm does not cause horrible mood change. So your headache may be chronic tension type headache. You may relieve by antianxiety Chat Doctor."
+      },
+      {
+        "question": "Almost everytime I eat, it burns when I swallow. Not in my throat but in my chest. It burns all the way down. It helps a lil if I drink water after I swallow. I wake up a lot in the middle of the night with heartburn so I chew some tums and it helps for the most part. Why is it so painful when I eat?",
+        "answer": "Thanks for your question on Chat Doctor. I can understand your concern. In my opinion, you are mostly having HERD (gastroesophageal reflux disease). It is due to laxity of gastroesophageal sphincter. Because of this the acid of the stomach tends to come up in the esophagus and cause burning in chest. So follow these steps for better symptomatic relief. 1. Avoid stress and tension. 2. Avoid hot and spicy food. Avoid junk food. Avoid large meals, instead take frequent small meals. 3. Take proton pump inhibitors and prokinetic Chat Doctor.  4. Keep 2 - 3 pillows under head in the bed to prevent reflux. 5. Quit smoking and alcohol if you have these habits. Lose weight if you are obese. Don't worry, you will be alright with all these. Hope I have solved your query. I will be happy to help you further. Wish you good health. Thanks."
+      },
+      {
+        "question": "hi, i have been recently diagnosed with H pylori.. i have been give the triple treatment of calithramycin, amoxxicilin and omeprazole.. is dis something very serious and does this have some long term implications etc.can u plz give some detailed information about Hpylori. thnx",
+        "answer": "HiT hanks for choosing Chat Doctor for your query. I appreciate your concern towards H pylori infection which normally causes break in the lining of the stomach (peptic ulcer). H pylori is an exceptional bacterium which can survive in the acidic environment of the stomach producing tissue damage result in ulcer. Since this is a bacterial infection, hence antibiotics are used for 2 weeks to kill H pylori. Along with antibiotics Omeprazole is given for a period of 4-6 weeks to suppress the acid production and to increase the healing process of the ulcer. It is not a serious condition, usually triple treatment is sufficient to cure this condition. You must avoid taking Alcohol, hot and spicy foods, NSAID painkiller, smoking, caffeine, carbonated sweetened soft Chat Doctor. I hope all your doubts have been clarified in a simple language,Feedback in this regard is highly appreciated. Take care"
+      },
+      {
+        "question": "I have a 5 month old baby who is very congested with a terrible cough. Its rattly\/raspy and croupy sounding cough. She started choking on her coughs and the mucous that has come up. She also has a fever and runny nose. Should i take her to urgent care?",
+        "answer": "Thank you for using Chat Doctor. I would suggest that you see your doctor. Your baby maybe having bronchiolitis which is a lung infection common to your kids age. It is commonly caused by a virus. Albuterol via nebulization should be utilized in order to alleviate the wheezing and also help with the congestion. A decongestant can also be used for the colds. Also, it would also advise doing a chest X-ray in order to rule out other diseases (ex. pneumonia)sincerely, Mark RosarioGeneral pediatrics\/Pediatric Pulmonology"
+      }
+    ],
+    "signature_instructions": "Write a simple search query that will help answer a complex question.",
+    "signature_prefix": "Query:",
+    "extended_signature_instructions": "Write a simple search query that will help answer a complex question.",
+    "extended_signature_prefix": "Query:"
+  },
+  "retrieve": {
+    "k": 3
+  },
+  "generate_answer": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "question": "I have a 5 month old baby who is very congested with a terrible cough. Its rattly\/raspy and croupy sounding cough. She started choking on her coughs and the mucous that has come up. She also has a fever and runny nose. Should i take her to urgent care?",
+        "answer": "Thank you for using Chat Doctor. I would suggest that you see your doctor. Your baby maybe having bronchiolitis which is a lung infection common to your kids age. It is commonly caused by a virus. Albuterol via nebulization should be utilized in order to alleviate the wheezing and also help with the congestion. A decongestant can also be used for the colds. Also, it would also advise doing a chest X-ray in order to rule out other diseases (ex. pneumonia)sincerely, Mark RosarioGeneral pediatrics\/Pediatric Pulmonology"
+      },
+      {
+        "question": "Hi, I had a subarachnoid bleed and coiling of brain aneurysm last year. I am having some major bilateral temple pain along with numbness that comes and goes in my left arm\/hand\/fingers. I have had headaches since the aneurysm, but this is different. Also, my moods have been horrible for the past few weeks.",
+        "answer": "Aneurysm in brain causes headache due to compression of pain sensitive structure in brain. But pain is usually unilateral not bilateral. This pain will not radiate in both upper limb. Bilateral upper limb pain may be due to cervical spondylosis or other causes. You have anxiety of aneurysm, so due to anxiety your mood is horrible because aneurysm does not cause horrible mood change. So your headache may be chronic tension type headache. You may relieve by antianxiety Chat Doctor."
+      },
+      {
+        "question": "hi, i have been recently diagnosed with H pylori.. i have been give the triple treatment of calithramycin, amoxxicilin and omeprazole.. is dis something very serious and does this have some long term implications etc.can u plz give some detailed information about Hpylori. thnx",
+        "answer": "HiT hanks for choosing Chat Doctor for your query. I appreciate your concern towards H pylori infection which normally causes break in the lining of the stomach (peptic ulcer). H pylori is an exceptional bacterium which can survive in the acidic environment of the stomach producing tissue damage result in ulcer. Since this is a bacterial infection, hence antibiotics are used for 2 weeks to kill H pylori. Along with antibiotics Omeprazole is given for a period of 4-6 weeks to suppress the acid production and to increase the healing process of the ulcer. It is not a serious condition, usually triple treatment is sufficient to cure this condition. You must avoid taking Alcohol, hot and spicy foods, NSAID painkiller, smoking, caffeine, carbonated sweetened soft Chat Doctor. I hope all your doubts have been clarified in a simple language,Feedback in this regard is highly appreciated. Take care"
+      },
+      {
+        "question": "lump under left nipple and stomach pain (male) Hi,I have recently noticed a few weeks ago a lump under my nipple, it hurts to touch and is about the size of a quarter. Also I have bern experiencing stomach pains that prevent me from eating. I immediatly feel full and have extreme pain. Please help",
+        "answer": "HI. You have two different problems. The lump under the nipple should be removed, biopsied. This will help you to get rid of the disease, and you get a diagnosis. Second problem looks a bit serious one"
+      },
+      {
+        "question": "Almost everytime I eat, it burns when I swallow. Not in my throat but in my chest. It burns all the way down. It helps a lil if I drink water after I swallow. I wake up a lot in the middle of the night with heartburn so I chew some tums and it helps for the most part. Why is it so painful when I eat?",
+        "answer": "Thanks for your question on Chat Doctor. I can understand your concern. In my opinion, you are mostly having HERD (gastroesophageal reflux disease). It is due to laxity of gastroesophageal sphincter. Because of this the acid of the stomach tends to come up in the esophagus and cause burning in chest. So follow these steps for better symptomatic relief. 1. Avoid stress and tension. 2. Avoid hot and spicy food. Avoid junk food. Avoid large meals, instead take frequent small meals. 3. Take proton pump inhibitors and prokinetic Chat Doctor.  4. Keep 2 - 3 pillows under head in the bed to prevent reflux. 5. Quit smoking and alcohol if you have these habits. Lose weight if you are obese. Don't worry, you will be alright with all these. Hope I have solved your query. I will be happy to help you further. Wish you good health. Thanks."
+      }
+    ],
+    "signature_instructions": "\"Act as a Excellent Doctor and give solutions based on the symptops ",
+    "signature_prefix": "Answer:",
+    "extended_signature_instructions": "\"Act as a Excellent Doctor and give solutions based on the symptops ",
+    "extended_signature_prefix": "Answer:"
+  }
+}
