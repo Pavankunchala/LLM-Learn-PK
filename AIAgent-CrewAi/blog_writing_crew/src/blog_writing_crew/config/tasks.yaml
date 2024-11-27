@@ -1,0 +1,19 @@
+research_task:
+  description: >
+    Conduct a comprehensive research about {topic}, focusing on the latest advancements and trends in generative AI and large language models (LLMs). 
+    Ensure your findings cover areas such as model architectures, fine-tuning techniques,and real-world applications, 
+    relevant to the current landscape in 2024.
+  expected_output: >
+    A list of 10 bullet points highlighting the most significant and impactful developments about {topic}, 
+    especially in the field of generative AI and LLMs. and also  detailed examples of how to use it 
+  agent: researcher
+
+reporting_task:
+  description: >
+    Review the context you got about {topic} and expand each area into a full section for a detailed report. 
+    Ensure the report provides a comprehensive overview of generative AI and LLM trends, including emerging technologies, 
+    industry applications, ethical implications, and the future of LLM development.
+  expected_output: >
+    A fully developed report on {topic}, with each main topic expanded into a detailed section. 
+    The report should provide in-depth analysis, relevant examples, and actionable insights, formatted as markdown without '```'.
+  agent: reporting_analyst
