@@ -6,8 +6,6 @@ from crewai_tools import FileReadTool, CSVSearchTool
 import chardet
 
 
-# Set the API Key for LLM
-os.environ['GROQ_API_KEY'] = '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'
 
 # Detect file encoding
 def detect_encoding(file_path):
