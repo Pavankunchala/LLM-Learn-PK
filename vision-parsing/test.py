@@ -1,5 +1,7 @@
 from vision_parse import VisionParser, PDFPageConfig
 
+#pip install vision-parse 
+
 page_config = PDFPageConfig(
     dpi=400,
     color_space="RGB",
