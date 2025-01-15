@@ -1,0 +1,35 @@
+# Core Dependencies
+langchain
+langchain-community
+langchain-huggingface
+langchain-ollama
+langchain-chroma
+
+# Vector Store and Embeddings
+chromadb
+sentence-transformers
+
+# Web Crawling
+crawl4ai
+requests
+xmltodict
+
+# UI Framework
+chainlit
+
+# Environment Management
+python-dotenv
+
+# Utilities
+psutil
+asyncio
+
+# Ollama (LLM Backend)
+ollama
+
+# Compatibility
+pydantic
+
+# Optional (for GPU acceleration, if available)
+torch
+cuda-python
