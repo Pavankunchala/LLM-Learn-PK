@@ -81,5 +81,5 @@ Contributions are welcome! Feel free to open issues or submit pull requests for 
 
 ## 📬 Connect with Me
 
-If you're working on exciting AI projects or looking for innovative talent, let's connect and explore potential collaborations!
+If you're working on exciting AI projects or looking for innovative talent, let's connect and explore potential collaborations!, you can connect with me on pavankunchalapkofficial@gmail.com
 
