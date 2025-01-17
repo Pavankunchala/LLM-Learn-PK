@@ -61,7 +61,7 @@ def build_qa_pipeline():
         llm=llm
     )
 
-    # Function to flatten document content into plain text
+     # Function to flatten document content into plain text
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
 
