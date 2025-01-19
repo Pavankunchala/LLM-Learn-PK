@@ -37,8 +37,10 @@ crawl4ai-doctor
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/Pavankunchala/LLM-Learn-PK/tree/main/Chainlit-apps/crewai-documentation-bot
-   cd crewai-documentation-bot
+   git clone https://github.com/Pavankunchala/LLM-Learn-PK/tree/main/Chainlit-apps/llama_index_doc_bot
+
+   cd llama_index_doc_bot
+
    ```
 
 2. **Create and Activate Virtual Environment:**
