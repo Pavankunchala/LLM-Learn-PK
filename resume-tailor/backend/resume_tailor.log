@@ -1,0 +1,853 @@
+2025-03-22 01:55:58,136 - resume_tailor - WARNING - pdflatex is not available
+2025-03-22 01:55:58,276 - resume_tailor - INFO - reportlab is available for PDF generation
+2025-03-22 01:55:58,276 - resume_tailor - INFO - error_pdf is available for PDF generation
+2025-03-22 01:55:58,276 - resume_tailor - INFO - Initializing embeddings model: sentence-transformers/all-MiniLM-L6-v2
+2025-03-22 01:56:01,414 - resume_tailor - WARNING - CUDA was requested but is not available - falling back to CPU for embeddings
+2025-03-22 01:56:22,117 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-03-22 01:56:26,673 - resume_tailor - INFO - Embedded test text: 'Resume skills and experience', vector size: 384
+2025-03-22 01:56:26,686 - resume_tailor - INFO - Embedded test text: 'Job requirements', vector size: 384
+2025-03-22 01:56:26,695 - resume_tailor - INFO - Embedded test text: 'Machine learning', vector size: 384
+2025-03-22 01:56:26,705 - resume_tailor - INFO - Embedded test text: 'Software engineering', vector size: 384
+2025-03-22 01:56:26,706 - resume_tailor - INFO - Embeddings test successful: different texts produce different embeddings
+2025-03-22 01:56:26,708 - resume_tailor - INFO - === Resume Tailoring App Starting ===
+2025-03-22 01:56:26,709 - resume_tailor - INFO - PDF Generators: reportlab, error_pdf
+2025-03-22 01:56:26,709 - resume_tailor - INFO - Default Model: llama3
+2025-03-22 01:56:26,709 - resume_tailor - INFO - Embedding Model: sentence-transformers/all-MiniLM-L6-v2
+2025-03-22 01:56:26,709 - resume_tailor - INFO - GPU Acceleration: Enabled
+2025-03-22 01:56:26,709 - resume_tailor - INFO - Vector Store Directory: vector_stores
+2025-03-22 01:56:26,710 - resume_tailor - INFO - Retrieval Mode: hybrid
+2025-03-22 01:56:26,710 - resume_tailor - INFO - Log Level: INFO
+2025-03-22 01:56:26,766 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.31.115:5000
+2025-03-22 01:56:26,767 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-22 01:56:41,588 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 01:56:41,589 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 01:56:41] "GET /models HTTP/1.1" 200 -
+2025-03-22 01:56:41,833 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 01:56:41,834 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 01:56:41] "GET /models HTTP/1.1" 200 -
+2025-03-22 01:56:41,906 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 01:56:41,907 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 01:56:41] "GET /models HTTP/1.1" 200 -
+2025-03-22 01:56:44,650 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 01:56:44] "OPTIONS /process HTTP/1.1" 200 -
+2025-03-22 01:56:44,967 - resume_tailor - INFO - Detected base64 PDF data URL (125848 chars)
+2025-03-22 01:56:44,968 - resume_tailor - INFO - Processing resume (125848) and job description (3237 chars)
+2025-03-22 01:56:44,968 - resume_tailor - INFO - Resume format: pdf
+2025-03-22 01:56:44,971 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 01:56:44,972 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 01:56:44] "GET /models HTTP/1.1" 200 -
+2025-03-22 01:56:44,975 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 01:56:44,975 - resume_tailor - INFO - [Process-47233ebe] Starting new resume tailoring request with format: pdf
+2025-03-22 01:56:44,975 - resume_tailor - INFO - [Process-47233ebe] Extracting text from PDF resume
+2025-03-22 01:56:44,975 - resume_tailor - INFO - [PDF-47233ebe] Starting PDF text extraction for resume.pdf
+2025-03-22 01:56:44,977 - resume_tailor - INFO - [PDF-47233ebe] Detected base64 data URL format, length: 125848
+2025-03-22 01:56:44,977 - resume_tailor - INFO - [PDF-47233ebe] Decoded base64 PDF data, size: 94365 bytes
+2025-03-22 01:56:44,977 - resume_tailor - INFO - [PDF-47233ebe] PDF saved temporarily at: C:\Users\pavan\AppData\Local\Temp\tmpblfo7h7r.pdf
+2025-03-22 01:56:44,979 - resume_tailor - INFO - [PDF-47233ebe] Trying PyPDF2 standard, attempt 1/3
+2025-03-22 01:56:45,032 - resume_tailor - INFO - [PDF-47233ebe] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 01:56:45,032 - resume_tailor - INFO - [PDF-47233ebe] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 01:56:45,032 - resume_tailor - INFO - [PDF-47233ebe] Trying PyPDF2 standard, attempt 2/3
+2025-03-22 01:56:45,072 - resume_tailor - INFO - [PDF-47233ebe] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 01:56:45,072 - resume_tailor - INFO - [PDF-47233ebe] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 01:56:45,072 - resume_tailor - INFO - [PDF-47233ebe] Trying PyPDF2 standard, attempt 3/3
+2025-03-22 01:56:45,114 - resume_tailor - INFO - [PDF-47233ebe] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 01:56:45,114 - resume_tailor - INFO - [PDF-47233ebe] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 01:56:45,114 - resume_tailor - INFO - [PDF-47233ebe] Trying PyPDF2 with layout, attempt 1/3
+2025-03-22 01:56:45,159 - resume_tailor - INFO - [PDF-47233ebe] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 01:56:45,159 - resume_tailor - INFO - [PDF-47233ebe] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 01:56:45,159 - resume_tailor - INFO - [PDF-47233ebe] Trying PyPDF2 with layout, attempt 2/3
+2025-03-22 01:56:45,203 - resume_tailor - INFO - [PDF-47233ebe] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 01:56:45,203 - resume_tailor - INFO - [PDF-47233ebe] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 01:56:45,203 - resume_tailor - INFO - [PDF-47233ebe] Trying PyPDF2 with layout, attempt 3/3
+2025-03-22 01:56:45,251 - resume_tailor - INFO - [PDF-47233ebe] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 01:56:45,251 - resume_tailor - INFO - [PDF-47233ebe] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 01:56:45,251 - resume_tailor - INFO - [PDF-47233ebe] Using PyPDF2 standard result: 5273 chars, 716 words
+2025-03-22 01:56:45,251 - resume_tailor - INFO - [Process-47233ebe] Extracted resume text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning,...
+2025-03-22 01:56:45,251 - resume_tailor - INFO - [Process-47233ebe] Valid resume text extracted (5273 chars)
+2025-03-22 01:56:45,251 - resume_tailor - INFO - [Process-47233ebe] Using collection ID: collection_ad1bc93738f7
+2025-03-22 01:56:45,251 - resume_tailor - INFO - Creating chunks from resume text (5273 chars)
+2025-03-22 01:56:45,251 - resume_tailor - INFO - Created 3 chunks for resume
+2025-03-22 01:56:45,251 - resume_tailor - INFO - Sample chunk: 'Pavan Kumar Reddy Kunchala
+Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...'
+2025-03-22 01:56:45,251 - resume_tailor - INFO - Creating chunks from job text (3237 chars)
+2025-03-22 01:56:45,251 - resume_tailor - INFO - Created 2 chunks for job
+2025-03-22 01:56:45,251 - resume_tailor - INFO - Sample chunk: 'About the job
+About UpDoc
+
+
+
+At UpDoc, we are building the world's first clinically validated, physi...'
+2025-03-22 01:56:45,251 - resume_tailor - INFO - [Process-47233ebe] Created 3 resume chunks and 2 job chunks
+2025-03-22 01:56:45,257 - resume_tailor - INFO - Creating new vector store with 5 documents
+2025-03-22 01:56:45,257 - resume_tailor - INFO - Vector store will be persisted at: vector_stores\collection_ad1bc93738f7
+2025-03-22 01:56:46,069 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-03-22 01:56:47,408 - resume_tailor - INFO - Validating new vector store
+2025-03-22 01:56:47,437 - resume_tailor - INFO - Vector store test successful for query 'Relevant': returned 2 results
+2025-03-22 01:56:47,437 - resume_tailor - INFO - First result: 'Pavan Kumar Reddy Kunchala
+Email: Pavankunchalapk@...'
+2025-03-22 01:56:47,451 - resume_tailor - INFO - Vector store test successful for query 'Developed': returned 2 results
+2025-03-22 01:56:47,451 - resume_tailor - INFO - First result: 'What You’ll Need
+
+5+ years of professional softwar...'
+2025-03-22 01:56:47,465 - resume_tailor - INFO - Vector store test successful for query 'evaluation': returned 2 results
+2025-03-22 01:56:47,465 - resume_tailor - INFO - First result: 'CSV File Analyzer with CrewAI
+Automated dataset an...'
+2025-03-22 01:56:47,467 - resume_tailor - INFO - [Process-47233ebe] Vector store ready for collection collection_ad1bc93738f7
+2025-03-22 01:56:47,467 - resume_tailor - INFO - Creating retriever in hybrid mode
+2025-03-22 01:56:47,473 - resume_tailor - INFO - Created BM25 retriever
+2025-03-22 01:56:47,475 - resume_tailor - INFO - BM25 retriever test: 5 results for query 'skills requirements experience'
+2025-03-22 01:56:47,482 - resume_tailor - INFO - Created vector retriever
+2025-03-22 01:56:47,495 - resume_tailor - INFO - Vector retriever test: 5 results for query 'skills requirements experience'
+2025-03-22 01:56:47,496 - resume_tailor - INFO - Created hybrid retriever with weights: BM25=0.5, Dense=0.5
+2025-03-22 01:56:47,500 - resume_tailor - INFO - Using 7 dynamic queries for retrieval
+2025-03-22 01:56:47,516 - resume_tailor - INFO - Retrieved 5 chunks for query: 'skills experience qualificatio...'
+2025-03-22 01:56:47,532 - resume_tailor - INFO - Retrieved 5 chunks for query: 'technical expertise profession...'
+2025-03-22 01:56:47,552 - resume_tailor - INFO - Retrieved 5 chunks for query: 'job responsibilities duties sk...'
+2025-03-22 01:56:47,570 - resume_tailor - INFO - Retrieved 5 chunks for query: 'Interview Process Collaborate ...'
+2025-03-22 01:56:47,584 - resume_tailor - INFO - Retrieved 5 chunks for query: 'Competitive e.g You experience...'
+2025-03-22 01:56:47,598 - resume_tailor - INFO - Retrieved 5 chunks for query: 'Technical Need Stanford experi...'
+2025-03-22 01:56:47,616 - resume_tailor - INFO - Retrieved 5 chunks for query: 'What You Mayo Clinic Pydantic ...'
+2025-03-22 01:56:47,616 - resume_tailor - INFO - Initial retrieved chunks: 21 from resume, 14 from job
+2025-03-22 01:56:47,616 - resume_tailor - INFO - Removed 30 duplicate chunks
+2025-03-22 01:56:47,616 - resume_tailor - INFO - After filtering and balancing: 5 chunks
+2025-03-22 01:56:47,617 - resume_tailor - INFO - [Process-47233ebe] Retrieved 5 relevant chunks using hybrid retriever
+2025-03-22 01:56:47,617 - resume_tailor - INFO - [Process-47233ebe] Resume chunk sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...
+2025-03-22 01:56:47,617 - resume_tailor - INFO - [Process-47233ebe] Analyzing resume and job description with LLM...
+2025-03-22 01:56:47,617 - resume_tailor - INFO - Calling Ollama for resume analysis with model: gemma3:12b
+2025-03-22 01:57:14,656 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 01:57:14,657 - resume_tailor - INFO - LLM response received in 27.04 seconds
+2025-03-22 01:57:14,657 - resume_tailor - INFO - Parsing JSON response
+2025-03-22 01:57:14,657 - resume_tailor - INFO - Successfully parsed LLM analysis with match percentage: 78%
+2025-03-22 01:57:14,657 - resume_tailor - INFO - [Process-47233ebe] Analysis complete - Match percentage: 78%
+2025-03-22 01:57:14,657 - resume_tailor - INFO - [Process-47233ebe] Analysis summary - Matching skills: 10, Missing skills: 4, Education entries: 3, Experience entries: 3
+2025-03-22 01:57:14,657 - resume_tailor - INFO - [Process-47233ebe] Generating tailored resume...
+2025-03-22 01:57:14,659 - resume_tailor - INFO - Calling Ollama for resume tailoring with model: gemma3:12b
+2025-03-22 01:58:01,820 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 01:58:01,821 - resume_tailor - INFO - LLM response received in 47.16 seconds
+2025-03-22 01:58:01,822 - resume_tailor - INFO - Extracted tailored resume (0 chars) and changes (0 chars)
+2025-03-22 01:58:01,822 - resume_tailor - ERROR - Extracted resume is incomplete or invalid
+2025-03-22 01:58:01,822 - resume_tailor - ERROR - No resume content extracted from LLM response
+2025-03-22 01:58:01,822 - resume_tailor - INFO - Creating fallback resume with preserved original format
+2025-03-22 01:58:01,822 - resume_tailor - INFO - Creating simple fallback resume (format extraction failed)
+2025-03-22 01:58:01,822 - resume_tailor - INFO - [Process-47233ebe] Resume tailoring completed successfully
+2025-03-22 01:58:01,822 - resume_tailor - INFO - [Process-47233ebe] Generated LaTeX size: 3033 chars
+2025-03-22 01:58:01,822 - resume_tailor - INFO - [Process-47233ebe] Generating PDF from LaTeX...
+2025-03-22 01:58:01,822 - resume_tailor - INFO - Attempting PDF generation using reportlab
+2025-03-22 01:58:01,832 - resume_tailor - INFO - [Process-47233ebe] PDF generation successful using reportlab
+2025-03-22 01:58:01,833 - resume_tailor - INFO - [Process-47233ebe] Total processing time: 76.86 seconds
+2025-03-22 01:58:01,833 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 01:58:01] "POST /process HTTP/1.1" 200 -
+2025-03-22 02:23:45,829 - resume_tailor - WARNING - pdflatex is not available
+2025-03-22 02:23:45,991 - resume_tailor - INFO - reportlab is available for PDF generation
+2025-03-22 02:23:45,991 - resume_tailor - INFO - error_pdf is available for PDF generation
+2025-03-22 02:23:45,991 - resume_tailor - INFO - Initializing embeddings model: sentence-transformers/all-MiniLM-L6-v2
+2025-03-22 02:23:47,924 - resume_tailor - WARNING - CUDA was requested but is not available - falling back to CPU for embeddings
+2025-03-22 02:23:52,714 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-03-22 02:23:57,887 - resume_tailor - INFO - Embedded test text: 'Resume skills and experience', vector size: 384
+2025-03-22 02:23:57,895 - resume_tailor - INFO - Embedded test text: 'Job requirements', vector size: 384
+2025-03-22 02:23:57,905 - resume_tailor - INFO - Embedded test text: 'Machine learning', vector size: 384
+2025-03-22 02:23:57,917 - resume_tailor - INFO - Embedded test text: 'Software engineering', vector size: 384
+2025-03-22 02:23:57,918 - resume_tailor - INFO - Embeddings test successful: different texts produce different embeddings
+2025-03-22 02:23:57,921 - resume_tailor - INFO - === Resume Tailoring App Starting ===
+2025-03-22 02:23:57,921 - resume_tailor - INFO - PDF Generators: reportlab, error_pdf
+2025-03-22 02:23:57,921 - resume_tailor - INFO - Default Model: llama3
+2025-03-22 02:23:57,922 - resume_tailor - INFO - Embedding Model: sentence-transformers/all-MiniLM-L6-v2
+2025-03-22 02:23:57,922 - resume_tailor - INFO - GPU Acceleration: Enabled
+2025-03-22 02:23:57,922 - resume_tailor - INFO - Vector Store Directory: vector_stores
+2025-03-22 02:23:57,922 - resume_tailor - INFO - Retrieval Mode: hybrid
+2025-03-22 02:23:57,922 - resume_tailor - INFO - Log Level: INFO
+2025-03-22 02:23:57,946 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.31.115:5000
+2025-03-22 02:23:57,946 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-22 02:24:07,179 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:24:07,179 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:24:07] "GET /models HTTP/1.1" 200 -
+2025-03-22 02:24:07,429 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:24:07,429 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:24:07] "GET /models HTTP/1.1" 200 -
+2025-03-22 02:24:07,493 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:24:07,494 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:24:07] "GET /models HTTP/1.1" 200 -
+2025-03-22 02:24:09,390 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:24:09] "OPTIONS /process HTTP/1.1" 200 -
+2025-03-22 02:24:09,702 - resume_tailor - INFO - Detected base64 PDF data URL (125848 chars)
+2025-03-22 02:24:09,703 - resume_tailor - INFO - Processing resume (125848) and job description (3237 chars)
+2025-03-22 02:24:09,703 - resume_tailor - INFO - Resume format: pdf
+2025-03-22 02:24:09,706 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:24:09,706 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:24:09] "GET /models HTTP/1.1" 200 -
+2025-03-22 02:24:09,709 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:24:09,709 - resume_tailor - INFO - [Process-0beeb7c0] Starting new resume tailoring request with format: pdf
+2025-03-22 02:24:09,709 - resume_tailor - INFO - [Process-0beeb7c0] Extracting text from PDF resume
+2025-03-22 02:24:09,709 - resume_tailor - INFO - [PDF-0beeb7c0] Starting PDF text extraction for resume.pdf
+2025-03-22 02:24:09,710 - resume_tailor - INFO - [PDF-0beeb7c0] Detected base64 data URL format, length: 125848
+2025-03-22 02:24:09,710 - resume_tailor - INFO - [PDF-0beeb7c0] Decoded base64 PDF data, size: 94365 bytes
+2025-03-22 02:24:09,712 - resume_tailor - INFO - [PDF-0beeb7c0] PDF saved temporarily at: C:\Users\pavan\AppData\Local\Temp\tmpfsi76lib.pdf
+2025-03-22 02:24:09,712 - resume_tailor - INFO - [PDF-0beeb7c0] Trying PyPDF2 standard, attempt 1/3
+2025-03-22 02:24:09,763 - resume_tailor - INFO - [PDF-0beeb7c0] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 02:24:09,764 - resume_tailor - INFO - [PDF-0beeb7c0] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:24:09,764 - resume_tailor - INFO - [PDF-0beeb7c0] Trying PyPDF2 standard, attempt 2/3
+2025-03-22 02:24:09,801 - resume_tailor - INFO - [PDF-0beeb7c0] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 02:24:09,802 - resume_tailor - INFO - [PDF-0beeb7c0] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:24:09,802 - resume_tailor - INFO - [PDF-0beeb7c0] Trying PyPDF2 standard, attempt 3/3
+2025-03-22 02:24:09,838 - resume_tailor - INFO - [PDF-0beeb7c0] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 02:24:09,839 - resume_tailor - INFO - [PDF-0beeb7c0] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:24:09,839 - resume_tailor - INFO - [PDF-0beeb7c0] Trying PyPDF2 with layout, attempt 1/3
+2025-03-22 02:24:09,877 - resume_tailor - INFO - [PDF-0beeb7c0] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 02:24:09,878 - resume_tailor - INFO - [PDF-0beeb7c0] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:24:09,878 - resume_tailor - INFO - [PDF-0beeb7c0] Trying PyPDF2 with layout, attempt 2/3
+2025-03-22 02:24:09,915 - resume_tailor - INFO - [PDF-0beeb7c0] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 02:24:09,915 - resume_tailor - INFO - [PDF-0beeb7c0] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:24:09,915 - resume_tailor - INFO - [PDF-0beeb7c0] Trying PyPDF2 with layout, attempt 3/3
+2025-03-22 02:24:09,952 - resume_tailor - INFO - [PDF-0beeb7c0] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 02:24:09,952 - resume_tailor - INFO - [PDF-0beeb7c0] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:24:09,954 - resume_tailor - INFO - [PDF-0beeb7c0] Using PyPDF2 standard result: 5273 chars, 716 words
+2025-03-22 02:24:09,954 - resume_tailor - INFO - [Process-0beeb7c0] Extracted resume text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning,...
+2025-03-22 02:24:09,954 - resume_tailor - INFO - [Process-0beeb7c0] Valid resume text extracted (5273 chars)
+2025-03-22 02:24:09,955 - resume_tailor - INFO - [Process-0beeb7c0] Using collection ID: collection_ad1bc93738f7
+2025-03-22 02:24:09,955 - resume_tailor - INFO - Creating chunks from resume text (5273 chars)
+2025-03-22 02:24:09,955 - resume_tailor - INFO - Created 3 chunks for resume
+2025-03-22 02:24:09,955 - resume_tailor - INFO - Sample chunk: 'Pavan Kumar Reddy Kunchala
+Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...'
+2025-03-22 02:24:09,956 - resume_tailor - INFO - Creating chunks from job text (3237 chars)
+2025-03-22 02:24:09,956 - resume_tailor - INFO - Created 2 chunks for job
+2025-03-22 02:24:09,956 - resume_tailor - INFO - Sample chunk: 'About the job
+About UpDoc
+
+
+
+At UpDoc, we are building the world's first clinically validated, physi...'
+2025-03-22 02:24:09,956 - resume_tailor - INFO - [Process-0beeb7c0] Created 3 resume chunks and 2 job chunks
+2025-03-22 02:24:09,957 - resume_tailor - INFO - Loading existing vector store from vector_stores\collection_ad1bc93738f7
+2025-03-22 02:24:10,400 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-03-22 02:24:10,654 - resume_tailor - INFO - Vector store validation successful: retrieved 1 results
+2025-03-22 02:24:10,660 - resume_tailor - INFO - [Process-0beeb7c0] Vector store ready for collection collection_ad1bc93738f7
+2025-03-22 02:24:10,660 - resume_tailor - INFO - Creating retriever in hybrid mode
+2025-03-22 02:24:10,660 - resume_tailor - INFO - Created BM25 retriever
+2025-03-22 02:24:10,668 - resume_tailor - INFO - BM25 retriever test: 5 results for query 'skills requirements experience'
+2025-03-22 02:24:10,672 - resume_tailor - INFO - Created vector retriever
+2025-03-22 02:24:10,689 - resume_tailor - INFO - Vector retriever test: 5 results for query 'skills requirements experience'
+2025-03-22 02:24:10,689 - resume_tailor - INFO - Created hybrid retriever with weights: BM25=0.5, Dense=0.5
+2025-03-22 02:24:10,694 - resume_tailor - INFO - Using 7 dynamic queries for retrieval
+2025-03-22 02:24:10,712 - resume_tailor - INFO - Retrieved 5 chunks for query: 'skills experience qualificatio...'
+2025-03-22 02:24:10,746 - resume_tailor - INFO - Retrieved 5 chunks for query: 'technical expertise profession...'
+2025-03-22 02:24:10,771 - resume_tailor - INFO - Retrieved 5 chunks for query: 'job responsibilities duties sk...'
+2025-03-22 02:24:10,794 - resume_tailor - INFO - Retrieved 5 chunks for query: 'SOC Need Interview Process exp...'
+2025-03-22 02:24:10,815 - resume_tailor - INFO - Retrieved 5 chunks for query: 'LLM Azure FHIR experience skil...'
+2025-03-22 02:24:10,833 - resume_tailor - INFO - Retrieved 5 chunks for query: 'Implement Work Python experien...'
+2025-03-22 02:24:10,852 - resume_tailor - INFO - Retrieved 5 chunks for query: 'You Shape updoc.ai experience ...'
+2025-03-22 02:24:10,852 - resume_tailor - INFO - Initial retrieved chunks: 21 from resume, 14 from job
+2025-03-22 02:24:10,852 - resume_tailor - INFO - Removed 30 duplicate chunks
+2025-03-22 02:24:10,852 - resume_tailor - INFO - After filtering and balancing: 5 chunks
+2025-03-22 02:24:10,852 - resume_tailor - INFO - [Process-0beeb7c0] Retrieved 5 relevant chunks using hybrid retriever
+2025-03-22 02:24:10,853 - resume_tailor - INFO - [Process-0beeb7c0] Resume chunk sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...
+2025-03-22 02:24:10,853 - resume_tailor - INFO - [Process-0beeb7c0] Analyzing resume and job description with LLM...
+2025-03-22 02:24:10,853 - resume_tailor - INFO - Calling Ollama for resume analysis with model: gemma3:12b
+2025-03-22 02:24:36,984 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 02:24:36,986 - resume_tailor - INFO - LLM response received in 26.13 seconds
+2025-03-22 02:24:36,986 - resume_tailor - INFO - Parsing JSON response
+2025-03-22 02:24:36,986 - resume_tailor - INFO - Successfully parsed LLM analysis with match percentage: 78%
+2025-03-22 02:24:36,986 - resume_tailor - INFO - [Process-0beeb7c0] Analysis complete - Match percentage: 78%
+2025-03-22 02:24:36,986 - resume_tailor - INFO - [Process-0beeb7c0] Analysis summary - Matching skills: 10, Missing skills: 4, Education entries: 3, Experience entries: 3
+2025-03-22 02:24:36,986 - resume_tailor - INFO - [Process-0beeb7c0] Generating tailored resume...
+2025-03-22 02:24:36,988 - resume_tailor - INFO - Calling Ollama for resume tailoring with model: gemma3:12b
+2025-03-22 02:25:27,187 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 02:25:27,188 - resume_tailor - INFO - LLM response received in 50.20 seconds
+2025-03-22 02:25:27,189 - resume_tailor - INFO - Extracted tailored resume (0 chars) and changes (0 chars)
+2025-03-22 02:25:27,189 - resume_tailor - WARNING - Experience section has issues: Missing content
+2025-03-22 02:25:27,189 - resume_tailor - INFO - Restored original experience section to preserve integrity
+2025-03-22 02:25:27,189 - resume_tailor - ERROR - Extracted resume is incomplete or invalid
+2025-03-22 02:25:27,189 - resume_tailor - ERROR - No resume content extracted from LLM response
+2025-03-22 02:25:27,189 - resume_tailor - INFO - Creating fallback resume with preserved original format
+2025-03-22 02:25:27,189 - resume_tailor - INFO - Creating simple fallback resume (format extraction failed)
+2025-03-22 02:25:27,193 - resume_tailor - INFO - [Process-0beeb7c0] Resume tailoring completed successfully
+2025-03-22 02:25:27,193 - resume_tailor - INFO - [Process-0beeb7c0] Generated LaTeX size: 3033 chars
+2025-03-22 02:25:27,193 - resume_tailor - INFO - [Process-0beeb7c0] Generating PDF from LaTeX...
+2025-03-22 02:25:27,193 - resume_tailor - INFO - Attempting PDF generation using reportlab
+2025-03-22 02:25:27,208 - resume_tailor - INFO - [Process-0beeb7c0] PDF generation successful using reportlab
+2025-03-22 02:25:27,208 - resume_tailor - INFO - [Process-0beeb7c0] Total processing time: 77.50 seconds
+2025-03-22 02:25:27,210 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:25:27] "POST /process HTTP/1.1" 200 -
+2025-03-22 02:31:53,801 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:31:53,802 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:31:53] "GET /models HTTP/1.1" 200 -
+2025-03-22 02:31:54,057 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:31:54,058 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:31:54] "GET /models HTTP/1.1" 200 -
+2025-03-22 02:35:38,543 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:35:38,543 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:35:38] "GET /models HTTP/1.1" 200 -
+2025-03-22 02:35:42,110 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:35:42] "OPTIONS /process HTTP/1.1" 200 -
+2025-03-22 02:35:42,416 - resume_tailor - INFO - Detected base64 PDF data URL (125848 chars)
+2025-03-22 02:35:42,416 - resume_tailor - INFO - Processing resume (125848) and job description (3237 chars)
+2025-03-22 02:35:42,416 - resume_tailor - INFO - Resume format: pdf
+2025-03-22 02:35:42,424 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:35:42,425 - resume_tailor - INFO - [Process-61bb36ea] Starting new resume tailoring request with format: pdf
+2025-03-22 02:35:42,425 - resume_tailor - INFO - [Process-61bb36ea] Extracting text from PDF resume
+2025-03-22 02:35:42,425 - resume_tailor - INFO - [PDF-33321f01] Starting PDF text extraction for resume.pdf
+2025-03-22 02:35:42,426 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 02:35:42,426 - resume_tailor - INFO - [PDF-33321f01] Detected base64 data URL format, length: 125848
+2025-03-22 02:35:42,426 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:35:42] "GET /models HTTP/1.1" 200 -
+2025-03-22 02:35:42,426 - resume_tailor - INFO - [PDF-33321f01] Decoded base64 PDF data, size: 94365 bytes
+2025-03-22 02:35:42,428 - resume_tailor - INFO - [PDF-33321f01] PDF saved temporarily at: C:\Users\pavan\AppData\Local\Temp\tmpiprhtjt3.pdf
+2025-03-22 02:35:42,429 - resume_tailor - INFO - [PDF-33321f01] Trying PyPDF2 standard, attempt 1/3
+2025-03-22 02:35:42,479 - resume_tailor - INFO - [PDF-33321f01] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 02:35:42,479 - resume_tailor - INFO - [PDF-33321f01] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:35:42,479 - resume_tailor - INFO - [PDF-33321f01] Trying PyPDF2 standard, attempt 2/3
+2025-03-22 02:35:42,522 - resume_tailor - INFO - [PDF-33321f01] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 02:35:42,523 - resume_tailor - INFO - [PDF-33321f01] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:35:42,523 - resume_tailor - INFO - [PDF-33321f01] Trying PyPDF2 standard, attempt 3/3
+2025-03-22 02:35:42,560 - resume_tailor - INFO - [PDF-33321f01] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 02:35:42,560 - resume_tailor - INFO - [PDF-33321f01] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:35:42,561 - resume_tailor - INFO - [PDF-33321f01] Trying PyPDF2 with layout, attempt 1/3
+2025-03-22 02:35:42,598 - resume_tailor - INFO - [PDF-33321f01] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 02:35:42,598 - resume_tailor - INFO - [PDF-33321f01] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:35:42,599 - resume_tailor - INFO - [PDF-33321f01] Trying PyPDF2 with layout, attempt 2/3
+2025-03-22 02:35:42,637 - resume_tailor - INFO - [PDF-33321f01] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 02:35:42,638 - resume_tailor - INFO - [PDF-33321f01] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:35:42,638 - resume_tailor - INFO - [PDF-33321f01] Trying PyPDF2 with layout, attempt 3/3
+2025-03-22 02:35:42,674 - resume_tailor - INFO - [PDF-33321f01] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 02:35:42,674 - resume_tailor - INFO - [PDF-33321f01] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 02:35:42,675 - resume_tailor - INFO - [PDF-33321f01] Using PyPDF2 standard result: 5273 chars, 716 words
+2025-03-22 02:35:42,675 - resume_tailor - INFO - [Process-61bb36ea] Extracted resume text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning,...
+2025-03-22 02:35:42,676 - resume_tailor - INFO - [Process-61bb36ea] Valid resume text extracted (5273 chars)
+2025-03-22 02:35:42,676 - resume_tailor - INFO - [Process-61bb36ea] Using collection ID: collection_ad1bc93738f7
+2025-03-22 02:35:42,676 - resume_tailor - INFO - Creating chunks from resume text (5273 chars)
+2025-03-22 02:35:42,676 - resume_tailor - INFO - Created 3 chunks for resume
+2025-03-22 02:35:42,676 - resume_tailor - INFO - Sample chunk: 'Pavan Kumar Reddy Kunchala
+Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...'
+2025-03-22 02:35:42,677 - resume_tailor - INFO - Creating chunks from job text (3237 chars)
+2025-03-22 02:35:42,677 - resume_tailor - INFO - Created 2 chunks for job
+2025-03-22 02:35:42,677 - resume_tailor - INFO - Sample chunk: 'About the job
+About UpDoc
+
+
+
+At UpDoc, we are building the world's first clinically validated, physi...'
+2025-03-22 02:35:42,677 - resume_tailor - INFO - [Process-61bb36ea] Created 3 resume chunks and 2 job chunks
+2025-03-22 02:35:42,681 - resume_tailor - INFO - Using cached vector store for collection collection_ad1bc93738f7
+2025-03-22 02:35:42,681 - resume_tailor - INFO - [Process-61bb36ea] Vector store ready for collection collection_ad1bc93738f7
+2025-03-22 02:35:42,683 - resume_tailor - INFO - Using cached retriever for collection collection_ad1bc93738f7
+2025-03-22 02:35:42,685 - resume_tailor - INFO - Using 7 dynamic queries for retrieval
+2025-03-22 02:35:42,700 - resume_tailor - INFO - Retrieved 5 chunks for query: 'skills experience qualificatio...'
+2025-03-22 02:35:42,714 - resume_tailor - INFO - Retrieved 5 chunks for query: 'technical expertise profession...'
+2025-03-22 02:35:42,727 - resume_tailor - INFO - Retrieved 5 chunks for query: 'job responsibilities duties sk...'
+2025-03-22 02:35:42,743 - resume_tailor - INFO - Retrieved 5 chunks for query: 'SOC Need Interview Process exp...'
+2025-03-22 02:35:42,758 - resume_tailor - INFO - Retrieved 5 chunks for query: 'LLM Azure FHIR experience skil...'
+2025-03-22 02:35:42,775 - resume_tailor - INFO - Retrieved 5 chunks for query: 'Implement Work Python experien...'
+2025-03-22 02:35:42,793 - resume_tailor - INFO - Retrieved 5 chunks for query: 'You Shape updoc.ai experience ...'
+2025-03-22 02:35:42,793 - resume_tailor - INFO - Initial retrieved chunks: 21 from resume, 14 from job
+2025-03-22 02:35:42,794 - resume_tailor - INFO - Removed 30 duplicate chunks
+2025-03-22 02:35:42,794 - resume_tailor - INFO - After filtering and balancing: 5 chunks
+2025-03-22 02:35:42,794 - resume_tailor - INFO - [Process-61bb36ea] Retrieved 5 relevant chunks using hybrid retriever
+2025-03-22 02:35:42,794 - resume_tailor - INFO - [Process-61bb36ea] Resume chunk sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...
+2025-03-22 02:35:42,795 - resume_tailor - INFO - [Process-61bb36ea] Analyzing resume and job description with LLM...
+2025-03-22 02:35:42,795 - resume_tailor - INFO - Calling Ollama for resume analysis with model: gemma3:12b
+2025-03-22 02:36:10,643 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 02:36:10,644 - resume_tailor - INFO - LLM response received in 27.85 seconds
+2025-03-22 02:36:10,644 - resume_tailor - INFO - Parsing JSON response
+2025-03-22 02:36:10,644 - resume_tailor - INFO - Successfully parsed LLM analysis with match percentage: 78%
+2025-03-22 02:36:10,644 - resume_tailor - INFO - [Process-61bb36ea] Analysis complete - Match percentage: 78%
+2025-03-22 02:36:10,644 - resume_tailor - INFO - [Process-61bb36ea] Analysis summary - Matching skills: 10, Missing skills: 4, Education entries: 3, Experience entries: 3
+2025-03-22 02:36:10,645 - resume_tailor - INFO - [Process-61bb36ea] Generating tailored resume...
+2025-03-22 02:36:10,645 - resume_tailor - INFO - Calling Ollama for resume tailoring with model: gemma3:12b
+2025-03-22 02:37:03,277 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 02:37:03,278 - resume_tailor - INFO - LLM response received in 52.63 seconds
+2025-03-22 02:37:03,279 - resume_tailor - INFO - Extracted tailored resume (0 chars) and changes (0 chars)
+2025-03-22 02:37:03,279 - resume_tailor - WARNING - Experience section has issues: Missing content
+2025-03-22 02:37:03,279 - resume_tailor - INFO - Restored original experience section to preserve integrity
+2025-03-22 02:37:03,279 - resume_tailor - ERROR - Extracted resume is incomplete or invalid
+2025-03-22 02:37:03,280 - resume_tailor - ERROR - No resume content extracted from LLM response
+2025-03-22 02:37:03,280 - resume_tailor - INFO - Creating fallback resume with preserved original format
+2025-03-22 02:37:03,280 - resume_tailor - INFO - Creating simple fallback resume (format extraction failed)
+2025-03-22 02:37:03,280 - resume_tailor - INFO - [Process-61bb36ea] Resume tailoring completed successfully
+2025-03-22 02:37:03,280 - resume_tailor - INFO - [Process-61bb36ea] Generated LaTeX size: 3033 chars
+2025-03-22 02:37:03,281 - resume_tailor - INFO - [Process-61bb36ea] Generating PDF from LaTeX...
+2025-03-22 02:37:03,281 - resume_tailor - INFO - Attempting PDF generation using reportlab
+2025-03-22 02:37:03,286 - resume_tailor - INFO - [Process-61bb36ea] PDF generation successful using reportlab
+2025-03-22 02:37:03,286 - resume_tailor - INFO - [Process-61bb36ea] Total processing time: 80.86 seconds
+2025-03-22 02:37:03,287 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 02:37:03] "POST /process HTTP/1.1" 200 -
+2025-03-22 04:42:24,827 - resume_tailor - WARNING - pdflatex is not available
+2025-03-22 04:42:24,954 - resume_tailor - INFO - reportlab is available for PDF generation
+2025-03-22 04:42:24,954 - resume_tailor - INFO - error_pdf is available for PDF generation
+2025-03-22 04:42:24,954 - resume_tailor - INFO - Initializing embeddings model: jinaai/jina-embeddings-v3
+2025-03-22 04:42:26,827 - resume_tailor - WARNING - CUDA was requested but is not available - falling back to CPU for embeddings
+2025-03-22 04:42:31,629 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: jinaai/jina-embeddings-v3
+2025-03-22 04:42:34,805 - resume_tailor - ERROR - Error initializing embeddings: No module named 'custom_st'
+Traceback (most recent call last):
+  File "D:\LLM-Learn-PK\resume-tailor\venv\lib\site-packages\sentence_transformers\util.py", line 1140, in import_from_string
+    module = importlib.import_module(dotted_path)
+  File "C:\Users\pavan\AppData\Local\Programs\Python\Python310\lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'custom_st'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\LLM-Learn-PK\resume-tailor\backend\app.py", line 315, in initialize_embeddings
+    embeddings = HuggingFaceEmbeddings(
+  File "D:\LLM-Learn-PK\resume-tailor\venv\lib\site-packages\langchain_huggingface\embeddings\huggingface.py", line 59, in __init__
+    self._client = sentence_transformers.SentenceTransformer(
+  File "D:\LLM-Learn-PK\resume-tailor\venv\lib\site-packages\sentence_transformers\SentenceTransformer.py", line 308, in __init__
+    modules, self.module_kwargs = self._load_sbert_model(
+  File "D:\LLM-Learn-PK\resume-tailor\venv\lib\site-packages\sentence_transformers\SentenceTransformer.py", line 1672, in _load_sbert_model
+    module_class = self._load_module_class_from_ref(
+  File "D:\LLM-Learn-PK\resume-tailor\venv\lib\site-packages\sentence_transformers\SentenceTransformer.py", line 1577, in _load_module_class_from_ref
+    return import_from_string(class_ref)
+  File "D:\LLM-Learn-PK\resume-tailor\venv\lib\site-packages\sentence_transformers\util.py", line 1142, in import_from_string
+    module = importlib.import_module(module_path)
+  File "C:\Users\pavan\AppData\Local\Programs\Python\Python310\lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'custom_st'
+2025-03-22 04:42:34,826 - resume_tailor - WARNING - Will proceed without embeddings and use full text in prompts instead
+2025-03-22 04:42:34,836 - resume_tailor - INFO - === Resume Tailoring App Starting ===
+2025-03-22 04:42:34,836 - resume_tailor - INFO - PDF Generators: reportlab, error_pdf
+2025-03-22 04:42:34,836 - resume_tailor - INFO - Default Model: llama3
+2025-03-22 04:42:34,836 - resume_tailor - INFO - Embedding Model: Not available
+2025-03-22 04:42:34,837 - resume_tailor - INFO - GPU Acceleration: Enabled
+2025-03-22 04:42:34,837 - resume_tailor - INFO - Vector Store Directory: vector_stores
+2025-03-22 04:42:34,837 - resume_tailor - INFO - Retrieval Mode: hybrid
+2025-03-22 04:42:34,837 - resume_tailor - INFO - Log Level: INFO
+2025-03-22 04:42:34,854 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.31.115:5000
+2025-03-22 04:42:34,855 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-22 04:43:35,140 - resume_tailor - WARNING - pdflatex is not available
+2025-03-22 04:43:35,252 - resume_tailor - INFO - reportlab is available for PDF generation
+2025-03-22 04:43:35,252 - resume_tailor - INFO - error_pdf is available for PDF generation
+2025-03-22 04:43:35,252 - resume_tailor - INFO - Initializing embeddings model: ibm-granite/granite-embedding-278m-multilingual
+2025-03-22 04:43:36,947 - resume_tailor - WARNING - CUDA was requested but is not available - falling back to CPU for embeddings
+2025-03-22 04:43:40,490 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: ibm-granite/granite-embedding-278m-multilingual
+2025-03-22 04:44:50,261 - resume_tailor - INFO - Embedded test text: 'Resume skills and experience', vector size: 768
+2025-03-22 04:44:50,293 - resume_tailor - INFO - Embedded test text: 'Job requirements', vector size: 768
+2025-03-22 04:44:50,321 - resume_tailor - INFO - Embedded test text: 'Machine learning', vector size: 768
+2025-03-22 04:44:50,349 - resume_tailor - INFO - Embedded test text: 'Software engineering', vector size: 768
+2025-03-22 04:44:50,349 - resume_tailor - INFO - Embeddings test successful: different texts produce different embeddings
+2025-03-22 04:44:50,352 - resume_tailor - INFO - === Resume Tailoring App Starting ===
+2025-03-22 04:44:50,352 - resume_tailor - INFO - PDF Generators: reportlab, error_pdf
+2025-03-22 04:44:50,352 - resume_tailor - INFO - Default Model: llama3
+2025-03-22 04:44:50,352 - resume_tailor - INFO - Embedding Model: ibm-granite/granite-embedding-278m-multilingual
+2025-03-22 04:44:50,352 - resume_tailor - INFO - GPU Acceleration: Enabled
+2025-03-22 04:44:50,352 - resume_tailor - INFO - Vector Store Directory: vector_stores
+2025-03-22 04:44:50,352 - resume_tailor - INFO - Retrieval Mode: hybrid
+2025-03-22 04:44:50,352 - resume_tailor - INFO - Log Level: INFO
+2025-03-22 04:44:50,366 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.31.115:5000
+2025-03-22 04:44:50,366 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-22 04:46:09,743 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:46:09,745 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:46:09] "GET /models HTTP/1.1" 200 -
+2025-03-22 04:46:09,994 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:46:09,994 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:46:09] "GET /models HTTP/1.1" 200 -
+2025-03-22 04:46:10,056 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:46:10,057 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:46:10] "GET /models HTTP/1.1" 200 -
+2025-03-22 04:46:12,165 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:46:12] "OPTIONS /process HTTP/1.1" 200 -
+2025-03-22 04:46:12,469 - resume_tailor - INFO - Detected base64 PDF data URL (125848 chars)
+2025-03-22 04:46:12,469 - resume_tailor - INFO - Processing resume (125848) and job description (3237 chars)
+2025-03-22 04:46:12,469 - resume_tailor - INFO - Resume format: pdf
+2025-03-22 04:46:12,479 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:46:12,480 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:46:12,480 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:46:12] "GET /models HTTP/1.1" 200 -
+2025-03-22 04:46:12,481 - resume_tailor - INFO - [Process-5a92ad61] Starting new resume tailoring request with format: pdf
+2025-03-22 04:46:12,481 - resume_tailor - INFO - [Process-5a92ad61] Extracting text from PDF resume
+2025-03-22 04:46:12,481 - resume_tailor - INFO - [PDF-5a92ad61] Starting PDF text extraction for resume.pdf
+2025-03-22 04:46:12,481 - resume_tailor - INFO - [PDF-5a92ad61] Detected base64 data URL format, length: 125848
+2025-03-22 04:46:12,481 - resume_tailor - INFO - [PDF-5a92ad61] Decoded base64 PDF data, size: 94365 bytes
+2025-03-22 04:46:12,481 - resume_tailor - INFO - [PDF-5a92ad61] PDF saved temporarily at: C:\Users\pavan\AppData\Local\Temp\tmpw2yb6z7k.pdf
+2025-03-22 04:46:12,484 - resume_tailor - INFO - [PDF-5a92ad61] Trying PyPDF2 standard, attempt 1/3
+2025-03-22 04:46:12,542 - resume_tailor - INFO - [PDF-5a92ad61] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 04:46:12,544 - resume_tailor - INFO - [PDF-5a92ad61] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:46:12,544 - resume_tailor - INFO - [PDF-5a92ad61] Trying PyPDF2 standard, attempt 2/3
+2025-03-22 04:46:12,583 - resume_tailor - INFO - [PDF-5a92ad61] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 04:46:12,583 - resume_tailor - INFO - [PDF-5a92ad61] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:46:12,583 - resume_tailor - INFO - [PDF-5a92ad61] Trying PyPDF2 standard, attempt 3/3
+2025-03-22 04:46:12,625 - resume_tailor - INFO - [PDF-5a92ad61] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 04:46:12,625 - resume_tailor - INFO - [PDF-5a92ad61] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:46:12,625 - resume_tailor - INFO - [PDF-5a92ad61] Trying PyPDF2 with layout, attempt 1/3
+2025-03-22 04:46:12,666 - resume_tailor - INFO - [PDF-5a92ad61] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 04:46:12,666 - resume_tailor - INFO - [PDF-5a92ad61] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:46:12,667 - resume_tailor - INFO - [PDF-5a92ad61] Trying PyPDF2 with layout, attempt 2/3
+2025-03-22 04:46:12,704 - resume_tailor - INFO - [PDF-5a92ad61] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 04:46:12,704 - resume_tailor - INFO - [PDF-5a92ad61] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:46:12,704 - resume_tailor - INFO - [PDF-5a92ad61] Trying PyPDF2 with layout, attempt 3/3
+2025-03-22 04:46:12,747 - resume_tailor - INFO - [PDF-5a92ad61] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 04:46:12,747 - resume_tailor - INFO - [PDF-5a92ad61] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:46:12,747 - resume_tailor - INFO - [PDF-5a92ad61] Using PyPDF2 standard result: 5273 chars, 716 words
+2025-03-22 04:46:12,747 - resume_tailor - INFO - [Process-5a92ad61] Extracted resume text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning,...
+2025-03-22 04:46:12,747 - resume_tailor - INFO - [Process-5a92ad61] Valid resume text extracted (5273 chars)
+2025-03-22 04:46:12,751 - resume_tailor - INFO - [Process-5a92ad61] Using collection ID: collection_ad1bc93738f7
+2025-03-22 04:46:12,751 - resume_tailor - INFO - Creating chunks from resume text (5273 chars)
+2025-03-22 04:46:12,751 - resume_tailor - INFO - Created 3 chunks for resume
+2025-03-22 04:46:12,751 - resume_tailor - INFO - Sample chunk: 'Pavan Kumar Reddy Kunchala
+Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...'
+2025-03-22 04:46:12,752 - resume_tailor - INFO - Creating chunks from job text (3237 chars)
+2025-03-22 04:46:12,752 - resume_tailor - INFO - Created 2 chunks for job
+2025-03-22 04:46:12,752 - resume_tailor - INFO - Sample chunk: 'About the job
+About UpDoc
+
+
+
+At UpDoc, we are building the world's first clinically validated, physi...'
+2025-03-22 04:46:12,752 - resume_tailor - INFO - [Process-5a92ad61] Created 3 resume chunks and 2 job chunks
+2025-03-22 04:46:12,753 - resume_tailor - INFO - Loading existing vector store from vector_stores\collection_ad1bc93738f7
+2025-03-22 04:46:13,274 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-03-22 04:46:13,539 - resume_tailor - WARNING - Error loading existing vector store: Embedding dimension 768 does not match collection dimensionality 384
+2025-03-22 04:46:13,541 - resume_tailor - INFO - Will create a new vector store instead
+2025-03-22 04:46:13,541 - resume_tailor - INFO - Creating new vector store with 5 documents
+2025-03-22 04:46:13,541 - resume_tailor - INFO - Vector store will be persisted at: vector_stores\collection_ad1bc93738f7
+2025-03-22 04:46:15,262 - resume_tailor - ERROR - Error creating vector store: Embedding dimension 768 does not match collection dimensionality 384
+2025-03-22 04:46:15,264 - resume_tailor - WARNING - [Process-5a92ad61] Failed to create vector store
+2025-03-22 04:46:15,264 - resume_tailor - INFO - [Process-5a92ad61] Analyzing resume and job description with LLM...
+2025-03-22 04:46:15,264 - resume_tailor - INFO - Calling Ollama for resume analysis with model: gemma3:12b
+2025-03-22 04:46:50,054 - resume_tailor - WARNING - pdflatex is not available
+2025-03-22 04:46:50,199 - resume_tailor - INFO - reportlab is available for PDF generation
+2025-03-22 04:46:50,199 - resume_tailor - INFO - error_pdf is available for PDF generation
+2025-03-22 04:46:50,199 - resume_tailor - INFO - Initializing embeddings model: ibm-granite/granite-embedding-278m-multilingual
+2025-03-22 04:46:52,343 - resume_tailor - WARNING - CUDA was requested but is not available - falling back to CPU for embeddings
+2025-03-22 04:46:56,457 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: ibm-granite/granite-embedding-278m-multilingual
+2025-03-22 04:47:03,853 - resume_tailor - INFO - Embedded test text: 'Resume skills and experience', vector size: 768
+2025-03-22 04:47:03,882 - resume_tailor - INFO - Embedded test text: 'Job requirements', vector size: 768
+2025-03-22 04:47:03,913 - resume_tailor - INFO - Embedded test text: 'Machine learning', vector size: 768
+2025-03-22 04:47:03,946 - resume_tailor - INFO - Embedded test text: 'Software engineering', vector size: 768
+2025-03-22 04:47:03,946 - resume_tailor - INFO - Embeddings test successful: different texts produce different embeddings
+2025-03-22 04:47:03,949 - resume_tailor - INFO - === Resume Tailoring App Starting ===
+2025-03-22 04:47:03,949 - resume_tailor - INFO - PDF Generators: reportlab, error_pdf
+2025-03-22 04:47:03,949 - resume_tailor - INFO - Default Model: llama3
+2025-03-22 04:47:03,949 - resume_tailor - INFO - Embedding Model: ibm-granite/granite-embedding-278m-multilingual
+2025-03-22 04:47:03,949 - resume_tailor - INFO - GPU Acceleration: Enabled
+2025-03-22 04:47:03,950 - resume_tailor - INFO - Vector Store Directory: vector_stores
+2025-03-22 04:47:03,950 - resume_tailor - INFO - Retrieval Mode: hybrid
+2025-03-22 04:47:03,950 - resume_tailor - INFO - Log Level: INFO
+2025-03-22 04:47:03,974 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.31.115:5000
+2025-03-22 04:47:03,974 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-22 04:48:12,840 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:48:12,840 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:48:12] "GET /models HTTP/1.1" 200 -
+2025-03-22 04:48:13,095 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:48:13,095 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:48:13] "GET /models HTTP/1.1" 200 -
+2025-03-22 04:48:13,156 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:48:13,157 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:48:13] "GET /models HTTP/1.1" 200 -
+2025-03-22 04:48:15,116 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:48:15] "OPTIONS /process HTTP/1.1" 200 -
+2025-03-22 04:48:15,420 - resume_tailor - INFO - Detected base64 PDF data URL (125848 chars)
+2025-03-22 04:48:15,420 - resume_tailor - INFO - Processing resume (125848) and job description (3237 chars)
+2025-03-22 04:48:15,424 - resume_tailor - INFO - Resume format: pdf
+2025-03-22 04:48:15,430 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:48:15,430 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 04:48:15,430 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:48:15] "GET /models HTTP/1.1" 200 -
+2025-03-22 04:48:15,430 - resume_tailor - INFO - [Process-a82adeaf] Starting new resume tailoring request with format: pdf
+2025-03-22 04:48:15,430 - resume_tailor - INFO - [Process-a82adeaf] Extracting text from PDF resume
+2025-03-22 04:48:15,430 - resume_tailor - INFO - [PDF-a82adeaf] Starting PDF text extraction for resume.pdf
+2025-03-22 04:48:15,430 - resume_tailor - INFO - [PDF-a82adeaf] Detected base64 data URL format, length: 125848
+2025-03-22 04:48:15,432 - resume_tailor - INFO - [PDF-a82adeaf] Decoded base64 PDF data, size: 94365 bytes
+2025-03-22 04:48:15,432 - resume_tailor - INFO - [PDF-a82adeaf] PDF saved temporarily at: C:\Users\pavan\AppData\Local\Temp\tmpn7mysnex.pdf
+2025-03-22 04:48:15,432 - resume_tailor - INFO - [PDF-a82adeaf] Trying PyPDF2 standard, attempt 1/3
+2025-03-22 04:48:15,497 - resume_tailor - INFO - [PDF-a82adeaf] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 04:48:15,497 - resume_tailor - INFO - [PDF-a82adeaf] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:48:15,497 - resume_tailor - INFO - [PDF-a82adeaf] Trying PyPDF2 standard, attempt 2/3
+2025-03-22 04:48:15,543 - resume_tailor - INFO - [PDF-a82adeaf] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 04:48:15,543 - resume_tailor - INFO - [PDF-a82adeaf] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:48:15,543 - resume_tailor - INFO - [PDF-a82adeaf] Trying PyPDF2 standard, attempt 3/3
+2025-03-22 04:48:15,595 - resume_tailor - INFO - [PDF-a82adeaf] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 04:48:15,595 - resume_tailor - INFO - [PDF-a82adeaf] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:48:15,596 - resume_tailor - INFO - [PDF-a82adeaf] Trying PyPDF2 with layout, attempt 1/3
+2025-03-22 04:48:15,643 - resume_tailor - INFO - [PDF-a82adeaf] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 04:48:15,643 - resume_tailor - INFO - [PDF-a82adeaf] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:48:15,643 - resume_tailor - INFO - [PDF-a82adeaf] Trying PyPDF2 with layout, attempt 2/3
+2025-03-22 04:48:15,684 - resume_tailor - INFO - [PDF-a82adeaf] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 04:48:15,684 - resume_tailor - INFO - [PDF-a82adeaf] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:48:15,692 - resume_tailor - INFO - [PDF-a82adeaf] Trying PyPDF2 with layout, attempt 3/3
+2025-03-22 04:48:15,725 - resume_tailor - INFO - [PDF-a82adeaf] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 04:48:15,725 - resume_tailor - INFO - [PDF-a82adeaf] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 04:48:15,733 - resume_tailor - INFO - [PDF-a82adeaf] Using PyPDF2 standard result: 5273 chars, 716 words
+2025-03-22 04:48:15,733 - resume_tailor - INFO - [Process-a82adeaf] Extracted resume text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning,...
+2025-03-22 04:48:15,733 - resume_tailor - INFO - [Process-a82adeaf] Valid resume text extracted (5273 chars)
+2025-03-22 04:48:15,733 - resume_tailor - INFO - [Process-a82adeaf] Using collection ID: collection_ad1bc93738f7
+2025-03-22 04:48:15,733 - resume_tailor - INFO - Creating chunks from resume text (5273 chars)
+2025-03-22 04:48:15,735 - resume_tailor - INFO - Created 3 chunks for resume
+2025-03-22 04:48:15,735 - resume_tailor - INFO - Sample chunk: 'Pavan Kumar Reddy Kunchala
+Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...'
+2025-03-22 04:48:15,735 - resume_tailor - INFO - Creating chunks from job text (3237 chars)
+2025-03-22 04:48:15,735 - resume_tailor - INFO - Created 2 chunks for job
+2025-03-22 04:48:15,735 - resume_tailor - INFO - Sample chunk: 'About the job
+About UpDoc
+
+
+
+At UpDoc, we are building the world's first clinically validated, physi...'
+2025-03-22 04:48:15,735 - resume_tailor - INFO - [Process-a82adeaf] Created 3 resume chunks and 2 job chunks
+2025-03-22 04:48:15,735 - resume_tailor - INFO - Loading existing vector store from vector_stores\collection_ad1bc93738f7
+2025-03-22 04:48:16,196 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-03-22 04:48:16,407 - resume_tailor - WARNING - Error loading existing vector store: Embedding dimension 768 does not match collection dimensionality 384
+2025-03-22 04:48:16,407 - resume_tailor - INFO - Will create a new vector store instead
+2025-03-22 04:48:16,407 - resume_tailor - INFO - Creating new vector store with 5 documents
+2025-03-22 04:48:16,408 - resume_tailor - INFO - Vector store will be persisted at: vector_stores\collection_ad1bc93738f7
+2025-03-22 04:48:17,888 - resume_tailor - ERROR - Error creating vector store: Embedding dimension 768 does not match collection dimensionality 384
+2025-03-22 04:48:17,898 - resume_tailor - WARNING - [Process-a82adeaf] Failed to create vector store
+2025-03-22 04:48:17,898 - resume_tailor - INFO - [Process-a82adeaf] Analyzing resume and job description with LLM...
+2025-03-22 04:48:17,898 - resume_tailor - INFO - Calling Ollama for resume analysis with model: gemma3:12b
+2025-03-22 04:48:35,901 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 04:48:35,901 - resume_tailor - INFO - LLM response received in 18.00 seconds
+2025-03-22 04:48:35,901 - resume_tailor - INFO - Parsing JSON response
+2025-03-22 04:48:35,903 - resume_tailor - INFO - Successfully parsed LLM analysis with match percentage: 78%
+2025-03-22 04:48:35,903 - resume_tailor - INFO - [Process-a82adeaf] Analysis complete - Match percentage: 78%
+2025-03-22 04:48:35,903 - resume_tailor - INFO - [Process-a82adeaf] Analysis summary - Matching skills: 10, Missing skills: 4, Education entries: 3, Experience entries: 3
+2025-03-22 04:48:35,903 - resume_tailor - INFO - [Process-a82adeaf] Generating tailored resume...
+2025-03-22 04:48:35,903 - resume_tailor - INFO - Calling Ollama for resume tailoring with model: gemma3:12b
+2025-03-22 04:49:26,038 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 04:49:26,039 - resume_tailor - INFO - LLM response received in 50.14 seconds
+2025-03-22 04:49:26,040 - resume_tailor - INFO - Extracted tailored resume (0 chars) and changes (0 chars)
+2025-03-22 04:49:26,040 - resume_tailor - WARNING - Experience section has issues: Missing content
+2025-03-22 04:49:26,040 - resume_tailor - INFO - Restored original experience section to preserve integrity
+2025-03-22 04:49:26,040 - resume_tailor - ERROR - Extracted resume is incomplete or invalid
+2025-03-22 04:49:26,040 - resume_tailor - ERROR - No resume content extracted from LLM response
+2025-03-22 04:49:26,041 - resume_tailor - INFO - Creating fallback resume with preserved original format
+2025-03-22 04:49:26,041 - resume_tailor - INFO - Creating simple fallback resume (format extraction failed)
+2025-03-22 04:49:26,042 - resume_tailor - INFO - [Process-a82adeaf] Resume tailoring completed successfully
+2025-03-22 04:49:26,042 - resume_tailor - INFO - [Process-a82adeaf] Generated LaTeX size: 3033 chars
+2025-03-22 04:49:26,042 - resume_tailor - INFO - [Process-a82adeaf] Generating PDF from LaTeX...
+2025-03-22 04:49:26,042 - resume_tailor - INFO - Attempting PDF generation using reportlab
+2025-03-22 04:49:26,049 - resume_tailor - INFO - [Process-a82adeaf] PDF generation successful using reportlab
+2025-03-22 04:49:26,049 - resume_tailor - INFO - [Process-a82adeaf] Total processing time: 70.62 seconds
+2025-03-22 04:49:26,050 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 04:49:26] "POST /process HTTP/1.1" 200 -
+2025-03-22 05:25:15,755 - resume_tailor - WARNING - pdflatex is not available
+2025-03-22 05:25:15,855 - resume_tailor - INFO - reportlab is available for PDF generation
+2025-03-22 05:25:15,855 - resume_tailor - INFO - error_pdf is available for PDF generation
+2025-03-22 05:25:15,855 - resume_tailor - INFO - Initializing embeddings model: ibm-granite/granite-embedding-278m-multilingual
+2025-03-22 05:25:17,529 - resume_tailor - WARNING - CUDA was requested but is not available - falling back to CPU for embeddings
+2025-03-22 05:25:20,971 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: ibm-granite/granite-embedding-278m-multilingual
+2025-03-22 05:25:28,426 - resume_tailor - INFO - Embedded test text: 'Resume skills and experience', vector size: 768
+2025-03-22 05:25:28,467 - resume_tailor - INFO - Embedded test text: 'Job requirements', vector size: 768
+2025-03-22 05:25:28,501 - resume_tailor - INFO - Embedded test text: 'Machine learning', vector size: 768
+2025-03-22 05:25:28,538 - resume_tailor - INFO - Embedded test text: 'Software engineering', vector size: 768
+2025-03-22 05:25:28,538 - resume_tailor - INFO - Embeddings test successful: different texts produce different embeddings
+2025-03-22 05:25:28,542 - resume_tailor - INFO - === Resume Tailoring App Starting ===
+2025-03-22 05:25:28,542 - resume_tailor - INFO - PDF Generators: reportlab, error_pdf
+2025-03-22 05:25:28,543 - resume_tailor - INFO - Default Model: llama3
+2025-03-22 05:25:28,543 - resume_tailor - INFO - Embedding Model: ibm-granite/granite-embedding-278m-multilingual
+2025-03-22 05:25:28,543 - resume_tailor - INFO - GPU Acceleration: Enabled
+2025-03-22 05:25:28,543 - resume_tailor - INFO - Vector Store Directory: vector_stores
+2025-03-22 05:25:28,543 - resume_tailor - INFO - Retrieval Mode: hybrid
+2025-03-22 05:25:28,544 - resume_tailor - INFO - Log Level: INFO
+2025-03-22 05:25:28,566 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.31.115:5000
+2025-03-22 05:25:28,566 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-22 05:26:29,727 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 05:26:29,728 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:26:29] "GET /models HTTP/1.1" 200 -
+2025-03-22 05:26:29,988 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 05:26:29,988 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:26:29] "GET /models HTTP/1.1" 200 -
+2025-03-22 05:26:32,232 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:26:32] "OPTIONS /process HTTP/1.1" 200 -
+2025-03-22 05:26:32,538 - resume_tailor - INFO - Detected base64 PDF data URL (125848 chars)
+2025-03-22 05:26:32,538 - resume_tailor - INFO - Processing resume (125848) and job description (2343 chars)
+2025-03-22 05:26:32,538 - resume_tailor - INFO - Resume format: pdf
+2025-03-22 05:26:32,546 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 05:26:32,547 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 05:26:32,547 - resume_tailor - INFO - [Process-2f23911f] Starting new resume tailoring request with format: pdf
+2025-03-22 05:26:32,548 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:26:32] "GET /models HTTP/1.1" 200 -
+2025-03-22 05:26:32,548 - resume_tailor - INFO - [Process-2f23911f] Extracting text from PDF resume
+2025-03-22 05:26:32,548 - resume_tailor - INFO - [PDF-f4096fb5] Starting PDF text extraction for resume.pdf
+2025-03-22 05:26:32,548 - resume_tailor - INFO - [PDF-f4096fb5] Detected base64 data URL format, length: 125848
+2025-03-22 05:26:32,548 - resume_tailor - INFO - [PDF-f4096fb5] Decoded base64 PDF data, size: 94365 bytes
+2025-03-22 05:26:32,550 - resume_tailor - INFO - [PDF-f4096fb5] PDF saved temporarily at: C:\Users\pavan\AppData\Local\Temp\tmp_pibq77u.pdf
+2025-03-22 05:26:32,550 - resume_tailor - INFO - [PDF-f4096fb5] Trying PyPDF2 standard, attempt 1/3
+2025-03-22 05:26:32,604 - resume_tailor - INFO - [PDF-f4096fb5] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 05:26:32,604 - resume_tailor - INFO - [PDF-f4096fb5] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:26:32,605 - resume_tailor - INFO - [PDF-f4096fb5] Trying PyPDF2 standard, attempt 2/3
+2025-03-22 05:26:32,635 - resume_tailor - INFO - [PDF-f4096fb5] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 05:26:32,641 - resume_tailor - INFO - [PDF-f4096fb5] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:26:32,641 - resume_tailor - INFO - [PDF-f4096fb5] Trying PyPDF2 standard, attempt 3/3
+2025-03-22 05:26:32,678 - resume_tailor - INFO - [PDF-f4096fb5] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 05:26:32,678 - resume_tailor - INFO - [PDF-f4096fb5] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:26:32,678 - resume_tailor - INFO - [PDF-f4096fb5] Trying PyPDF2 with layout, attempt 1/3
+2025-03-22 05:26:32,717 - resume_tailor - INFO - [PDF-f4096fb5] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 05:26:32,718 - resume_tailor - INFO - [PDF-f4096fb5] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:26:32,718 - resume_tailor - INFO - [PDF-f4096fb5] Trying PyPDF2 with layout, attempt 2/3
+2025-03-22 05:26:32,752 - resume_tailor - INFO - [PDF-f4096fb5] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 05:26:32,752 - resume_tailor - INFO - [PDF-f4096fb5] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:26:32,752 - resume_tailor - INFO - [PDF-f4096fb5] Trying PyPDF2 with layout, attempt 3/3
+2025-03-22 05:26:32,791 - resume_tailor - INFO - [PDF-f4096fb5] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 05:26:32,791 - resume_tailor - INFO - [PDF-f4096fb5] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:26:32,793 - resume_tailor - INFO - [PDF-f4096fb5] Using PyPDF2 standard result: 5273 chars, 716 words
+2025-03-22 05:26:32,793 - resume_tailor - INFO - [Process-2f23911f] Extracted resume text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning,...
+2025-03-22 05:26:32,793 - resume_tailor - INFO - [Process-2f23911f] Valid resume text extracted (5273 chars)
+2025-03-22 05:26:32,794 - resume_tailor - INFO - [Process-2f23911f] Using collection ID: collection_c5129789f56b
+2025-03-22 05:26:32,794 - resume_tailor - INFO - Creating chunks from resume text (5273 chars)
+2025-03-22 05:26:32,794 - resume_tailor - INFO - Created 3 chunks for resume
+2025-03-22 05:26:32,794 - resume_tailor - INFO - Sample chunk: 'Pavan Kumar Reddy Kunchala
+Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...'
+2025-03-22 05:26:32,794 - resume_tailor - INFO - Creating chunks from job text (2343 chars)
+2025-03-22 05:26:32,794 - resume_tailor - INFO - Created 2 chunks for job
+2025-03-22 05:26:32,794 - resume_tailor - INFO - Sample chunk: 'About the job
+Perplexity is seeking top level AI Research Engineers to continue to improve our in ho...'
+2025-03-22 05:26:32,794 - resume_tailor - INFO - [Process-2f23911f] Created 3 resume chunks and 2 job chunks
+2025-03-22 05:26:32,794 - resume_tailor - INFO - Creating new vector store with 5 documents
+2025-03-22 05:26:32,794 - resume_tailor - INFO - Vector store will be persisted at: vector_stores\collection_c5129789f56b
+2025-03-22 05:26:33,166 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-03-22 05:26:35,720 - resume_tailor - INFO - Validating new vector store
+2025-03-22 05:26:35,830 - resume_tailor - INFO - Vector store test successful for query 'Relevant': returned 2 results
+2025-03-22 05:26:35,830 - resume_tailor - INFO - First result: 'CSV File Analyzer with CrewAI
+Automated dataset an...'
+2025-03-22 05:26:35,881 - resume_tailor - INFO - Vector store test successful for query 'Developed': returned 2 results
+2025-03-22 05:26:35,881 - resume_tailor - INFO - First result: '•Collaborated with cross-functional teams to integ...'
+2025-03-22 05:26:35,929 - resume_tailor - INFO - Vector store test successful for query 'evaluation': returned 2 results
+2025-03-22 05:26:35,930 - resume_tailor - INFO - First result: 'CSV File Analyzer with CrewAI
+Automated dataset an...'
+2025-03-22 05:26:35,931 - resume_tailor - INFO - [Process-2f23911f] Vector store ready for collection collection_c5129789f56b
+2025-03-22 05:26:35,932 - resume_tailor - INFO - Creating retriever in hybrid mode
+2025-03-22 05:26:35,941 - resume_tailor - INFO - Created BM25 retriever
+2025-03-22 05:26:35,944 - resume_tailor - INFO - BM25 retriever test: 5 results for query 'skills requirements experience'
+2025-03-22 05:26:35,945 - resume_tailor - INFO - Created vector retriever
+2025-03-22 05:26:35,996 - resume_tailor - INFO - Vector retriever test: 5 results for query 'skills requirements experience'
+2025-03-22 05:26:35,997 - resume_tailor - INFO - Created hybrid retriever with weights: BM25=0.5, Dense=0.5
+2025-03-22 05:26:36,002 - resume_tailor - INFO - Using 7 dynamic queries for retrieval
+2025-03-22 05:26:36,068 - resume_tailor - INFO - Retrieved 5 chunks for query: 'skills experience qualificatio...'
+2025-03-22 05:26:36,123 - resume_tailor - INFO - Retrieved 5 chunks for query: 'technical expertise profession...'
+2025-03-22 05:26:36,188 - resume_tailor - INFO - Retrieved 5 chunks for query: 'job responsibilities duties sk...'
+2025-03-22 05:26:36,235 - resume_tailor - INFO - Retrieved 5 chunks for query: 'Perplexity Enterprise Pro Resp...'
+2025-03-22 05:26:36,283 - resume_tailor - INFO - Retrieved 5 chunks for query: 'Our Nat Friedman NVIDIA experi...'
+2025-03-22 05:26:36,335 - resume_tailor - INFO - Retrieved 5 chunks for query: 'Research Engineers Sonar Final...'
+2025-03-22 05:26:36,376 - resume_tailor - INFO - Retrieved 5 chunks for query: 'Qualifications IVP Online expe...'
+2025-03-22 05:26:36,376 - resume_tailor - INFO - Initial retrieved chunks: 21 from resume, 14 from job
+2025-03-22 05:26:36,376 - resume_tailor - INFO - Removed 30 duplicate chunks
+2025-03-22 05:26:36,376 - resume_tailor - INFO - After filtering and balancing: 5 chunks
+2025-03-22 05:26:36,376 - resume_tailor - INFO - [Process-2f23911f] Retrieved 5 relevant chunks using hybrid retriever
+2025-03-22 05:26:36,376 - resume_tailor - INFO - [Process-2f23911f] Analyzing resume and job description with LLM...
+2025-03-22 05:26:36,376 - resume_tailor - INFO - Calling Ollama for resume analysis with model: gemma3:12b
+2025-03-22 05:27:02,956 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 05:27:02,958 - resume_tailor - INFO - LLM response received in 26.58 seconds
+2025-03-22 05:27:02,958 - resume_tailor - INFO - Parsing JSON response
+2025-03-22 05:27:02,958 - resume_tailor - INFO - Successfully parsed LLM analysis with match percentage: 78%
+2025-03-22 05:27:02,959 - resume_tailor - INFO - [Process-2f23911f] Analysis complete - Match percentage: 78%
+2025-03-22 05:27:02,959 - resume_tailor - INFO - [Process-2f23911f] Analysis summary - Matching skills: 6, Missing skills: 3, Education entries: 3, Experience entries: 5
+2025-03-22 05:27:02,959 - resume_tailor - INFO - [Process-2f23911f] Generating tailored resume...
+2025-03-22 05:27:02,959 - resume_tailor - INFO - Calling Ollama for resume tailoring with model: gemma3:12b
+2025-03-22 05:28:07,369 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 05:28:07,371 - resume_tailor - INFO - LLM response received in 64.41 seconds
+2025-03-22 05:28:07,372 - resume_tailor - INFO - Extracted tailored resume (0 chars) and changes (0 chars)
+2025-03-22 05:28:07,372 - resume_tailor - WARNING - Experience section has issues: Missing content
+2025-03-22 05:28:07,372 - resume_tailor - INFO - Restored original experience section to preserve integrity
+2025-03-22 05:28:07,372 - resume_tailor - ERROR - Extracted resume is incomplete or invalid
+2025-03-22 05:28:07,372 - resume_tailor - ERROR - No resume content extracted from LLM response
+2025-03-22 05:28:07,373 - resume_tailor - INFO - Creating fallback resume with preserved original format
+2025-03-22 05:28:07,373 - resume_tailor - INFO - Creating simple fallback resume (format extraction failed)
+2025-03-22 05:28:07,374 - resume_tailor - INFO - [Process-2f23911f] Resume tailoring completed successfully
+2025-03-22 05:28:07,374 - resume_tailor - INFO - [Process-2f23911f] Generated LaTeX size: 3388 chars
+2025-03-22 05:28:07,375 - resume_tailor - INFO - [Process-2f23911f] Generating PDF from LaTeX...
+2025-03-22 05:28:07,375 - resume_tailor - INFO - Attempting PDF generation using reportlab
+2025-03-22 05:28:07,384 - resume_tailor - INFO - [Process-2f23911f] PDF generation successful using reportlab
+2025-03-22 05:28:07,384 - resume_tailor - INFO - [Process-2f23911f] Total processing time: 94.84 seconds
+2025-03-22 05:28:07,384 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:28:07] "POST /process HTTP/1.1" 200 -
+2025-03-22 05:31:26,405 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 05:31:26,407 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:31:26] "GET /models HTTP/1.1" 200 -
+2025-03-22 05:31:26,646 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 05:31:26,646 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:31:26] "GET /models HTTP/1.1" 200 -
+2025-03-22 05:31:26,728 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 05:31:26,730 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:31:26] "GET /models HTTP/1.1" 200 -
+2025-03-22 05:31:30,085 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:31:30] "OPTIONS /process HTTP/1.1" 200 -
+2025-03-22 05:31:30,397 - resume_tailor - INFO - Detected base64 PDF data URL (125848 chars)
+2025-03-22 05:31:30,398 - resume_tailor - INFO - Processing resume (125848) and job description (3332 chars)
+2025-03-22 05:31:30,398 - resume_tailor - INFO - Resume format: pdf
+2025-03-22 05:31:30,404 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 05:31:30,406 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:31:30] "GET /models HTTP/1.1" 200 -
+2025-03-22 05:31:30,409 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-03-22 05:31:30,411 - resume_tailor - INFO - [Process-b970edf0] Starting new resume tailoring request with format: pdf
+2025-03-22 05:31:30,412 - resume_tailor - INFO - [Process-b970edf0] Extracting text from PDF resume
+2025-03-22 05:31:30,412 - resume_tailor - INFO - [PDF-4312cc52] Starting PDF text extraction for resume.pdf
+2025-03-22 05:31:30,412 - resume_tailor - INFO - [PDF-4312cc52] Detected base64 data URL format, length: 125848
+2025-03-22 05:31:30,413 - resume_tailor - INFO - [PDF-4312cc52] Decoded base64 PDF data, size: 94365 bytes
+2025-03-22 05:31:30,415 - resume_tailor - INFO - [PDF-4312cc52] PDF saved temporarily at: C:\Users\pavan\AppData\Local\Temp\tmpjjh0yjqj.pdf
+2025-03-22 05:31:30,415 - resume_tailor - INFO - [PDF-4312cc52] Trying PyPDF2 standard, attempt 1/3
+2025-03-22 05:31:30,523 - resume_tailor - INFO - [PDF-4312cc52] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 05:31:30,524 - resume_tailor - INFO - [PDF-4312cc52] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:31:30,524 - resume_tailor - INFO - [PDF-4312cc52] Trying PyPDF2 standard, attempt 2/3
+2025-03-22 05:31:30,602 - resume_tailor - INFO - [PDF-4312cc52] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 05:31:30,603 - resume_tailor - INFO - [PDF-4312cc52] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:31:30,604 - resume_tailor - INFO - [PDF-4312cc52] Trying PyPDF2 standard, attempt 3/3
+2025-03-22 05:31:30,661 - resume_tailor - INFO - [PDF-4312cc52] Successfully extracted valid text with PyPDF2 standard
+2025-03-22 05:31:30,662 - resume_tailor - INFO - [PDF-4312cc52] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:31:30,662 - resume_tailor - INFO - [PDF-4312cc52] Trying PyPDF2 with layout, attempt 1/3
+2025-03-22 05:31:30,715 - resume_tailor - INFO - [PDF-4312cc52] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 05:31:30,716 - resume_tailor - INFO - [PDF-4312cc52] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:31:30,716 - resume_tailor - INFO - [PDF-4312cc52] Trying PyPDF2 with layout, attempt 2/3
+2025-03-22 05:31:30,768 - resume_tailor - INFO - [PDF-4312cc52] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 05:31:30,768 - resume_tailor - INFO - [PDF-4312cc52] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:31:30,768 - resume_tailor - INFO - [PDF-4312cc52] Trying PyPDF2 with layout, attempt 3/3
+2025-03-22 05:31:30,832 - resume_tailor - INFO - [PDF-4312cc52] Successfully extracted valid text with PyPDF2 with layout
+2025-03-22 05:31:30,833 - resume_tailor - INFO - [PDF-4312cc52] Extracted text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning, generative AI, and LLM technologies. Adept at designing and implementing scalable computer vision and natural language processing solutions with a proven track record in developing state- of-the-art ...
+2025-03-22 05:31:30,835 - resume_tailor - INFO - [PDF-4312cc52] Using PyPDF2 standard result: 5273 chars, 716 words
+2025-03-22 05:31:30,835 - resume_tailor - INFO - [Process-b970edf0] Extracted resume text sample: Pavan Kumar Reddy Kunchala Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala — GitHub: Pavankunchala — Portfolio: pavankunchalapk.wixsite.com/resume — Phone: +1 909 402 5512 Objective Passionate and innovative Computer Vision Engineer with extensive experience in deep learning,...
+2025-03-22 05:31:30,835 - resume_tailor - INFO - [Process-b970edf0] Valid resume text extracted (5273 chars)
+2025-03-22 05:31:30,835 - resume_tailor - INFO - [Process-b970edf0] Using collection ID: collection_2a85a8d582b3
+2025-03-22 05:31:30,835 - resume_tailor - INFO - Creating chunks from resume text (5273 chars)
+2025-03-22 05:31:30,837 - resume_tailor - INFO - Created 3 chunks for resume
+2025-03-22 05:31:30,837 - resume_tailor - INFO - Sample chunk: 'Pavan Kumar Reddy Kunchala
+Email: Pavankunchalapk@gmail.com — LinkedIn: pavan-kumar-reddy-kunchala —...'
+2025-03-22 05:31:30,838 - resume_tailor - INFO - Creating chunks from job text (3332 chars)
+2025-03-22 05:31:30,838 - resume_tailor - INFO - Created 4 chunks for job
+2025-03-22 05:31:30,838 - resume_tailor - INFO - Sample chunk: 'About TrustLab
+
+
+
+Online misinformation, hate speech, child endangerment, and extreme violence are s...'
+2025-03-22 05:31:30,839 - resume_tailor - INFO - [Process-b970edf0] Created 3 resume chunks and 4 job chunks
+2025-03-22 05:31:30,840 - resume_tailor - INFO - Creating new vector store with 7 documents
+2025-03-22 05:31:30,841 - resume_tailor - INFO - Vector store will be persisted at: vector_stores\collection_2a85a8d582b3
+2025-03-22 05:31:30,844 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-03-22 05:31:34,746 - resume_tailor - INFO - Validating new vector store
+2025-03-22 05:31:34,845 - resume_tailor - INFO - Vector store test successful for query 'Relevant': returned 2 results
+2025-03-22 05:31:34,845 - resume_tailor - INFO - First result: 'CSV File Analyzer with CrewAI
+Automated dataset an...'
+2025-03-22 05:31:34,892 - resume_tailor - INFO - Vector store test successful for query 'Developed': returned 2 results
+2025-03-22 05:31:34,892 - resume_tailor - INFO - First result: '•Collaborated with cross-functional teams to integ...'
+2025-03-22 05:31:34,939 - resume_tailor - INFO - Vector store test successful for query 'evaluation': returned 2 results
+2025-03-22 05:31:34,939 - resume_tailor - INFO - First result: 'Pay range is specific to the U.S. – Bay Area; comp...'
+2025-03-22 05:31:34,942 - resume_tailor - INFO - [Process-b970edf0] Vector store ready for collection collection_2a85a8d582b3
+2025-03-22 05:31:34,942 - resume_tailor - INFO - Creating retriever in hybrid mode
+2025-03-22 05:31:34,944 - resume_tailor - INFO - Created BM25 retriever
+2025-03-22 05:31:34,945 - resume_tailor - INFO - BM25 retriever test: 5 results for query 'skills requirements experience'
+2025-03-22 05:31:34,949 - resume_tailor - INFO - Created vector retriever
+2025-03-22 05:31:35,001 - resume_tailor - INFO - Vector retriever test: 5 results for query 'skills requirements experience'
+2025-03-22 05:31:35,002 - resume_tailor - INFO - Created hybrid retriever with weights: BM25=0.5, Dense=0.5
+2025-03-22 05:31:35,005 - resume_tailor - INFO - Using 7 dynamic queries for retrieval
+2025-03-22 05:31:35,061 - resume_tailor - INFO - Retrieved 6 chunks for query: 'skills experience qualificatio...'
+2025-03-22 05:31:35,114 - resume_tailor - INFO - Retrieved 7 chunks for query: 'technical expertise profession...'
+2025-03-22 05:31:35,172 - resume_tailor - INFO - Retrieved 7 chunks for query: 'job responsibilities duties sk...'
+2025-03-22 05:31:35,236 - resume_tailor - INFO - Retrieved 7 chunks for query: 'You Collaborate e.g experience...'
+2025-03-22 05:31:35,296 - resume_tailor - INFO - Retrieved 7 chunks for query: 'NLP Bay Area Online experience...'
+2025-03-22 05:31:35,369 - resume_tailor - INFO - Retrieved 6 chunks for query: 'Leverage AWS RAG experience sk...'
+2025-03-22 05:31:35,426 - resume_tailor - INFO - Retrieved 7 chunks for query: 'Experience U.S Reddit experien...'
+2025-03-22 05:31:35,426 - resume_tailor - INFO - Initial retrieved chunks: 20 from resume, 27 from job
+2025-03-22 05:31:35,426 - resume_tailor - INFO - Removed 40 duplicate chunks
+2025-03-22 05:31:35,426 - resume_tailor - INFO - After filtering and balancing: 7 chunks
+2025-03-22 05:31:35,427 - resume_tailor - INFO - [Process-b970edf0] Retrieved 7 relevant chunks using hybrid retriever
+2025-03-22 05:31:35,427 - resume_tailor - INFO - [Process-b970edf0] Analyzing resume and job description with LLM...
+2025-03-22 05:31:35,427 - resume_tailor - INFO - Calling Ollama for resume analysis with model: gemma3:12b
+2025-03-22 05:31:56,651 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 05:31:56,651 - resume_tailor - INFO - LLM response received in 21.22 seconds
+2025-03-22 05:31:56,652 - resume_tailor - INFO - Parsing JSON response
+2025-03-22 05:31:56,652 - resume_tailor - INFO - Successfully parsed LLM analysis with match percentage: 65%
+2025-03-22 05:31:56,652 - resume_tailor - INFO - [Process-b970edf0] Analysis complete - Match percentage: 65%
+2025-03-22 05:31:56,653 - resume_tailor - INFO - [Process-b970edf0] Analysis summary - Matching skills: 13, Missing skills: 6, Education entries: 3, Experience entries: 4
+2025-03-22 05:31:56,653 - resume_tailor - INFO - [Process-b970edf0] Generating tailored resume...
+2025-03-22 05:31:56,653 - resume_tailor - INFO - Calling Ollama for resume tailoring with model: gemma3:12b
+2025-03-22 05:34:40,640 - httpx - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-03-22 05:34:40,643 - resume_tailor - INFO - LLM response received in 163.99 seconds
+2025-03-22 05:34:40,644 - resume_tailor - INFO - Extracted tailored resume (0 chars) and changes (0 chars)
+2025-03-22 05:34:40,644 - resume_tailor - WARNING - Experience section has issues: Missing content
+2025-03-22 05:34:40,644 - resume_tailor - INFO - Restored original experience section to preserve integrity
+2025-03-22 05:34:40,645 - resume_tailor - ERROR - Extracted resume is incomplete or invalid
+2025-03-22 05:34:40,646 - resume_tailor - ERROR - No resume content extracted from LLM response
+2025-03-22 05:34:40,646 - resume_tailor - INFO - Creating fallback resume with preserved original format
+2025-03-22 05:34:40,646 - resume_tailor - INFO - Creating simple fallback resume (format extraction failed)
+2025-03-22 05:34:40,647 - resume_tailor - INFO - [Process-b970edf0] Resume tailoring completed successfully
+2025-03-22 05:34:40,648 - resume_tailor - INFO - [Process-b970edf0] Generated LaTeX size: 3214 chars
+2025-03-22 05:34:40,648 - resume_tailor - INFO - [Process-b970edf0] Generating PDF from LaTeX...
+2025-03-22 05:34:40,648 - resume_tailor - INFO - Attempting PDF generation using reportlab
+2025-03-22 05:34:40,667 - resume_tailor - INFO - [Process-b970edf0] PDF generation successful using reportlab
+2025-03-22 05:34:40,667 - resume_tailor - INFO - [Process-b970edf0] Total processing time: 190.26 seconds
+2025-03-22 05:34:40,669 - werkzeug - INFO - 127.0.0.1 - - [22/Mar/2025 05:34:40] "POST /process HTTP/1.1" 200 -
