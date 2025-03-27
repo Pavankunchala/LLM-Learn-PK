@@ -14,9 +14,10 @@ from typing import Dict, List, Tuple, Any, Optional, Set, Union
 from dataclasses import dataclass
 from contextlib import contextmanager
 from datetime import datetime
+import threading
 
 # Flask and CORS
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, stream_with_context, Response
 from flask_cors import CORS
 
 # External LLM API library
@@ -35,6 +36,10 @@ from langchain.retrievers.ensemble import EnsembleRetriever
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import EmbeddingsFilter
+from langchain_ollama import OllamaLLM
+from langchain.callbacks.manager import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+
 
 # Configure logging with structured format and both file and console output
 logging.basicConfig(
@@ -50,7 +55,7 @@ logger = logging.getLogger("resume_tailor")
 # ------------------ Configuration ------------------
 class Config:
     """Configuration class for the application."""
-    DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "llama3")  # Can be overridden with environment variable
+    DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "gemma3:12b")  # Can be overridden with environment variable
     USE_GPU = os.getenv("USE_GPU", "1") == "1"  # Use GPU by default if available
     CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "2000"))
     CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "400"))
@@ -69,6 +74,223 @@ class Config:
     
 config = Config()
 
+# Global task progress tracking
+task_status = {
+    'id': None,
+    'progress': 0,
+    'status': 'idle',
+    'started_at': None,
+    'completed_at': None,
+    'message': '',
+    'error': None
+}
+
+# Cache to store results
+result_cache = {}
+
+def reset_task_status():
+    """Reset the global task status tracker"""
+    global task_status
+    task_status = {
+        'id': None,
+        'progress': 0,
+        'status': 'idle',
+        'started_at': None,
+        'completed_at': None,
+        'message': '',
+        'error': None
+    }
+
+def initialize_ollama_llm(model_name, temperature=0.01):
+    """Initialize an OllamaLLM instance with the specified model."""
+    # Verify model exists
+    model_name = verify_model_availability(model_name)
+    
+    # Create OllamaLLM instance
+    llm = OllamaLLM(
+        model=model_name,
+        temperature=temperature,
+        # callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]),
+        verbose=False
+    )
+    
+    return llm
+
+def get_available_models():
+    """Get available Ollama models with direct API approach."""
+    try:
+        # Use httpx for direct HTTP request (more reliable than client library)
+        import httpx
+        try:
+            response = httpx.get('http://localhost:11434/api/tags', timeout=5.0)
+            if response.status_code == 200:
+                data = response.json()
+                models = []
+                for model_obj in data.get('models', []):
+                    if 'name' in model_obj:
+                        models.append(model_obj['name'])
+                logger.info(f"Found {len(models)} models via direct API call")
+                return models
+        except Exception as http_error:
+            logger.warning(f"HTTP request for models failed: {str(http_error)}")
+    except ImportError:
+        logger.warning("httpx not available for direct API call")
+    
+    # Fall back to ollama client library
+    try:
+        models_response = ollama.list()
+        models = []
+        
+        # Try to extract models from response - handle all possible formats
+        if hasattr(models_response, 'models'):  # New attribute-based format
+            for model_obj in models_response.models:
+                if hasattr(model_obj, 'model'):
+                    models.append(model_obj.model)
+        elif isinstance(models_response, list):  # List-based format
+            for model_obj in models_response:
+                if hasattr(model_obj, 'model'):
+                    models.append(model_obj.model)
+        elif isinstance(models_response, dict) and 'models' in models_response:  # Dict-based format
+            for model in models_response.get('models', []):
+                if 'name' in model:
+                    models.append(model['name'])
+        
+        logger.info(f"Found {len(models)} models via ollama.list()")
+        return models
+    except Exception as e:
+        logger.error(f"Failed to get models from ollama client: {str(e)}")
+    
+    # Use default fallback models if all else fails
+    return ['llama3', 'mistral']
+
+def verify_model_availability(model):
+    """Verify if a model exists and return it or a valid alternative."""
+    if not model:
+        return config.DEFAULT_MODEL or "llama3"
+        
+    available_models = get_available_models()
+    
+    # If model exists (either exact match or without tag), use it
+    if model in available_models:
+        return model
+        
+    # Check for base model without tags
+    base_model = model.split(':')[0] if ':' in model else model
+    if base_model in available_models:
+        return base_model
+    
+    # Find alternative if not available
+    if available_models:
+        # Try to find a model from the same family
+        model_family = model.split(':')[0].lower() if ':' in model else model.lower()
+        for avail_model in available_models:
+            if model_family in avail_model.lower():
+                logger.info(f"Found alternative model from same family: {avail_model}")
+                return avail_model
+        
+        # Otherwise use any available model, preferring llama3
+        if "llama3" in available_models:
+            return "llama3"
+        return available_models[0]
+    
+    return model  # Fall back to original if we can't find alternatives
+
+def extract_content_from_llm_response(output, patterns=None):
+    """Extract content from LLM response with multiple fallback patterns."""
+    if not output:
+        return None, None
+    
+    # Handle log messages corrupting the output
+    # First, try to clean up the output by removing log lines
+    cleaned_output = re.sub(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} - \S+ - INFO.*?\n', ' ', output)
+    cleaned_output = re.sub(r'</br>', '', cleaned_output)  # Remove any HTML br tags
+    
+    # Direct pattern matching for LaTeX document
+    doc_match = re.search(r'(\\documentclass.*?\\end{document})', cleaned_output, re.DOTALL)
+    if doc_match:
+        latex_content = doc_match.group(1)
+        # Try to extract changes
+        changes = ""
+        if "<CHANGES_MADE>" in cleaned_output:
+            changes_match = re.search(r'<CHANGES_MADE>(.*?)(?:</CHANGES_MADE>|$)', cleaned_output, re.DOTALL)
+            if changes_match:
+                changes = changes_match.group(1).strip()
+        
+        logger.info(f"Successfully extracted LaTeX content directly: {len(latex_content)} chars")
+        return latex_content, changes or "Changes extracted directly"
+    
+    # Tag-based extraction
+    tag_match = re.search(r'<TAILORED_RESUME>(.*?)</TAILORED_RESUME>', cleaned_output, re.DOTALL)
+    if tag_match:
+        latex_content = tag_match.group(1).strip()
+        # Clean up any remaining log lines
+        latex_content = re.sub(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} - \S+ - INFO.*?\n', ' ', latex_content)
+        
+        # Try to extract changes
+        changes = ""
+        if "<CHANGES_MADE>" in cleaned_output:
+            changes_match = re.search(r'<CHANGES_MADE>(.*?)(?:</CHANGES_MADE>|$)', cleaned_output, re.DOTALL)
+            if changes_match:
+                changes = changes_match.group(1).strip()
+        
+        # Verify LaTeX is valid
+        if "\\documentclass" in latex_content and "\\begin{document}" in latex_content and "\\end{document}" in latex_content:
+            logger.info(f"Successfully extracted LaTeX content from tags: {len(latex_content)} chars")
+            return latex_content, changes or "No specific changes extracted"
+    
+    # Fallback: Try to reconstruct a valid LaTeX document
+    if "\\documentclass" in cleaned_output and "\\begin{document}" in cleaned_output:
+        # Find document class and preamble
+        class_match = re.search(r'(\\documentclass.*?)\\begin{document}', cleaned_output, re.DOTALL)
+        if class_match:
+            preamble = class_match.group(1)
+            
+            # Find content between begin and end document
+            content_match = re.search(r'\\begin{document}(.*?)(?:\\end{document}|$)', cleaned_output, re.DOTALL)
+            if content_match:
+                body = content_match.group(1)
+                
+                # Reconstruct full document
+                latex_content = f"{preamble}\\begin{{document}}{body}\\end{{document}}"
+                logger.info(f"Reconstructed LaTeX document: {len(latex_content)} chars")
+                return latex_content, "Reconstructed from partial components"
+    
+    # Super fallback: If we found some LaTeX elements but couldn't extract a complete document
+    if "\\section" in cleaned_output:
+        sections = re.findall(r'\\section\*{(.*?)}(.*?)(?=\\section|$)', cleaned_output, re.DOTALL)
+        if sections:
+            # Create a minimal LaTeX document with the extracted sections
+            minimal_latex = "\\documentclass{article}\n\\usepackage{geometry}\n\\geometry{margin=1in}\n\\begin{document}\n\n"
+            for title, content in sections:
+                minimal_latex += f"\\section*{{{title}}}\n{content.strip()}\n\n"
+            minimal_latex += "\\end{document}"
+            
+            logger.warning(f"Created minimal LaTeX doc from sections: {len(minimal_latex)} chars")
+            return minimal_latex, "Created from extracted sections"
+    
+    logger.error(f"All extraction methods failed. Sample output: {cleaned_output[:300]}...")
+    return None, None
+
+def update_task_status(progress=None, status=None, message=None, error=None):
+    """Update the global task status"""
+    global task_status
+    
+    if progress is not None:
+        task_status['progress'] = progress
+    
+    if status is not None:
+        task_status['status'] = status
+    
+    if message is not None:
+        task_status['message'] = message
+    
+    if error is not None:
+        task_status['error'] = error
+        task_status['status'] = 'error'
+    
+    if status == 'completed':
+        task_status['completed_at'] = time.time()
+        task_status['progress'] = 100
 # Set log level from configuration
 logger.setLevel(getattr(logging, config.LOG_LEVEL))
 
@@ -595,6 +817,7 @@ def create_or_load_vector_store(documents: List[Document], collection_id: str) -
     """
     Create a vector store from documents or load from cache if exists.
     Enhanced with better caching and content-based IDs.
+    Uses updated langchain_chroma imports.
     """
     if not embeddings:
         logger.warning("No embeddings available - skipping vector store creation")
@@ -668,6 +891,7 @@ def validate_vector_store(vector_store: Chroma, documents: List[Document]) -> bo
     """
     Validate a vector store with thorough testing.
     Only called for new vector stores to avoid redundant testing.
+    Updated to use similarity_search() as it's not affected by deprecation.
     """
     try:
         logger.info("Validating new vector store")
@@ -689,6 +913,7 @@ def validate_vector_store(vector_store: Chroma, documents: List[Document]) -> bo
         # Test with all queries
         all_tests_passed = True
         for query in test_queries:
+            # Use similarity_search which is not deprecated
             results = vector_store.similarity_search(query, k=2)
             if not results:
                 logger.warning(f"Vector store test returned no results for query: '{query}'")
@@ -710,8 +935,7 @@ def create_hybrid_retriever(
 ) -> Optional[Any]:
     """
     Create a retriever based on the configuration.
-    Can create BM25-only, dense-only, or hybrid retrievers.
-    Implements caching and per-source retrieval options.
+    Updated for langchain invoke() method instead of get_relevant_documents().
     """
     all_chunks = resume_chunks + job_chunks
     
@@ -739,7 +963,8 @@ def create_hybrid_retriever(
             # Test BM25 retriever
             try:
                 test_query = "skills requirements experience"
-                bm25_results = bm25_retriever.get_relevant_documents(test_query)
+                # Use invoke() instead of get_relevant_documents()
+                bm25_results = bm25_retriever.invoke(test_query)
                 logger.info(f"BM25 retriever test: {len(bm25_results)} results for query '{test_query}'")
                 
                 # If in BM25-only mode, cache and return it
@@ -751,10 +976,8 @@ def create_hybrid_retriever(
                 if retrieval_mode == 'bm25':
                     return None
         
-        # If we need to use dense retrieval but have no vector store, return BM25 or None
-        if not vector_store and retrieval_mode in ['dense', 'hybrid', 'all']:
-            logger.warning("No vector store available for dense retrieval")
-            return bm25_retriever
+        # Rest of function remains similar, but make sure all get_relevant_documents() calls
+        # are replaced with invoke()
         
         # Create vector retriever for semantic search
         vector_retriever = None
@@ -765,7 +988,8 @@ def create_hybrid_retriever(
             # Test vector retriever
             try:
                 test_query = "skills requirements experience"
-                vector_results = vector_retriever.get_relevant_documents(test_query)
+                # Use invoke() instead of get_relevant_documents()
+                vector_results = vector_retriever.invoke(test_query)
                 logger.info(f"Vector retriever test: {len(vector_results)} results for query '{test_query}'")
                 
                 # If in dense-only mode, cache and return it
@@ -790,7 +1014,6 @@ def create_hybrid_retriever(
             final_retriever = hybrid_retriever
         elif retrieval_mode == 'all' and bm25_retriever and vector_retriever:
             # Special mode: combine results from both methods but separately
-            # We'll handle this in the retrieval function
             logger.info("Using 'all' retrieval mode - will query both retrievers separately")
             final_retriever = {
                 'bm25': bm25_retriever,
@@ -810,6 +1033,8 @@ def create_hybrid_retriever(
     except Exception as e:
         logger.error(f"Error creating retriever: {str(e)}")
         return None
+
+
 
 def filter_and_balance_chunks(
     retrieved_chunks: List[Document], 
@@ -965,6 +1190,7 @@ def retrieve_relevant_chunks(
     """
     Perform retrieval with dynamic query generation and source balancing.
     Supports different retrieval modes and handles special 'all' mode.
+    Uses updated invoke() method instead of get_relevant_documents().
     """
     if not retriever:
         logger.warning("No retriever available, using default chunks")
@@ -985,7 +1211,8 @@ def retrieve_relevant_chunks(
             for query in queries:
                 # Query BM25 retriever
                 try:
-                    bm25_results = retriever['bm25'].get_relevant_documents(query)
+                    # Use invoke() instead of get_relevant_documents()
+                    bm25_results = retriever['bm25'].invoke(query)
                     logger.info(f"BM25 retrieved {len(bm25_results)} chunks for query: '{query[:30]}...'")
                     all_retrieved_chunks.extend(bm25_results)
                 except Exception as bm25_error:
@@ -993,7 +1220,8 @@ def retrieve_relevant_chunks(
                 
                 # Query vector retriever
                 try:
-                    vector_results = retriever['vector'].get_relevant_documents(query)
+                    # Use invoke() instead of get_relevant_documents()
+                    vector_results = retriever['vector'].invoke(query)
                     logger.info(f"Vector retrieved {len(vector_results)} chunks for query: '{query[:30]}...'")
                     all_retrieved_chunks.extend(vector_results)
                 except Exception as vector_error:
@@ -1002,7 +1230,8 @@ def retrieve_relevant_chunks(
             # Standard retriever (BM25, dense, or hybrid)
             for query in queries:
                 try:
-                    results = retriever.get_relevant_documents(query)
+                    # Use invoke() instead of get_relevant_documents()
+                    results = retriever.invoke(query)
                     logger.info(f"Retrieved {len(results)} chunks for query: '{query[:30]}...'")
                     all_retrieved_chunks.extend(results)
                 except Exception as e:
@@ -1022,6 +1251,17 @@ def analyze_with_llm(resume_text: str, job_description: str, model: str) -> Dict
     Use the LLM to analyze the resume against the job description.
     Enhanced with better prompting for structured output and error handling.
     """
+    # Safety check for model parameter
+    if not model:
+        logger.warning("Empty model parameter passed to analyze_with_llm, using default")
+        model = config.DEFAULT_MODEL
+        if not model:
+            model = "llama3"  # Hardcoded fallback
+
+    # Verify model availability
+    model = verify_model_availability(model)
+    logger.info(f"Using verified model for analysis: {model}")
+    
     # Create a prompt that works well with structured output
     prompt = f"""
 # Resume and Job Analysis Task
@@ -1030,7 +1270,8 @@ Analyze this resume and job description to extract key information and determine
 
 ## Resume:
 ```
-{resume_text[:3000]}  
+{resume_text[:3000]}
+
 ```
 {f"[Resume continues, total length: {len(resume_text)} characters]" if len(resume_text) > 3000 else ""}
 
@@ -1070,33 +1311,40 @@ Here's the exact JSON format to follow:
   "responsibilities": ["responsibility1", "responsibility2"],
   "match_percentage": 75
 }}
+```json
+{{
+  "matching_skills": ["skill1", "skill2"],
+  "missing_skills": ["skill3", "skill4"],
+  "education": [
+    {{ "degree": "Bachelor's", "institution": "University Name", "year": "2019" }}
+  ],
+  "experience": [
+    {{ "title": "Job Title", "company": "Company Name", "dates": "Jan 2020 - Present" }}
+  ],
+  "responsibilities": ["responsibility1", "responsibility2"],
+  "match_percentage": 75
+}}
 ```
 
 Return ONLY the JSON object, with no additional text before or after.
 """
 
     try:
-        # Call Ollama API for analysis
-        logger.info(f"Calling Ollama for resume analysis with model: {model}")
+        # Initialize OllamaLLM for analysis
+        logger.info(f"Initializing OllamaLLM for resume analysis with model: {model}")
         start_time = time.time()
         
-        response = ollama.generate(
-            model=model,
-            prompt=prompt,
-            options={
-                "temperature": 0.01,  # Keep temperature low for structured output
-                "num_predict": 2048,
-            }
-        )
+        # Create the LLM instance
+        llm = initialize_ollama_llm(model, temperature=0.01)
+        
+        # Invoke the LLM
+        logger.info(f"Invoking OllamaLLM for resume analysis")
+        output = llm.invoke(prompt)
         
         elapsed_time = time.time() - start_time
         logger.info(f"LLM response received in {elapsed_time:.2f} seconds")
         
-        # Extract and parse the JSON response
-        output = response.get('response', '')
-        
         # Clean up the output to extract just the JSON part
-        # Look for the JSON structure more robustly
         output = output.strip()
         
         # First try to extract the most likely JSON block
@@ -1118,7 +1366,7 @@ Return ONLY the JSON object, with no additional text before or after.
             
             # Validate the structure of the response
             required_keys = ['matching_skills', 'missing_skills', 'education', 
-                             'experience', 'responsibilities', 'match_percentage']
+                            'experience', 'responsibilities', 'match_percentage']
             
             for key in required_keys:
                 if key not in analysis:
@@ -1635,53 +1883,47 @@ Return ONLY the fixed LaTeX content with no additional text before or after.
 
     
 # ------------------ Resume Tailoring with LLM ------------------
+## 3. Updated generate_tailored_resume function
+
+
 def generate_tailored_resume(resume_text: str, job_description: str, analysis: Dict, relevant_chunks: Optional[List[Document]] = None, model: str = None) -> Dict:
-    """Generate a tailored resume using Ollama with robust error handling."""
+    """Generate a tailored resume using LangChain OllamaLLM with robust error handling."""
+    # Validate model parameter
+    if not model:
+        logger.warning("No model specified for generate_tailored_resume, using default")
+        model = config.DEFAULT_MODEL
+        if not model:
+            model = "llama3"  # Hardcoded fallback
+
+    # Verify model availability
+    model = verify_model_availability(model)
+    logger.info(f"Using verified model for resume generation: {model}")
+    
     # Generate the prompt
     prompt = generate_tailoring_prompt(resume_text, job_description, analysis, relevant_chunks)
     
     try:
-        # Call Ollama API
-        logger.info(f"Calling Ollama for resume tailoring with model: {model}")
+        # Initialize OllamaLLM for tailoring
+        logger.info(f"Initializing OllamaLLM for resume tailoring with model: {model}")
         start_time = time.time()
         
-        response = ollama.generate(
-            model=model,
-            prompt=prompt,
-            options={
-                "temperature": config.LLM_TEMPERATURE,
-                "top_p": 0.9,
-                "top_k": 40,
-                "num_predict": 4096,
-            }
-        )
+        # Create the LLM instance
+        llm = initialize_ollama_llm(model, temperature=config.LLM_TEMPERATURE)
         
-        output = response.get('response', '')
+        # Invoke the LLM
+        logger.info(f"Invoking OllamaLLM for resume tailoring")
+        output = llm.invoke(prompt)
+        
         processing_time = time.time() - start_time
         logger.info(f"LLM response received in {processing_time:.2f} seconds")
         
-        # Extract the tailored resume and changes
-        resume_pattern = r'<TAILORED_RESUME>(.*?)</TAILORED_RESUME>'
-        changes_pattern = r'<CHANGES_MADE>(.*?)</CHANGES_MADE>'
+        # Log a sample of the raw response to help with debugging
+        logger.debug(f"Raw LLM response sample: {output[:200]}...")
         
-        resume_match = re.search(resume_pattern, output, re.DOTALL)
-        changes_match = re.search(changes_pattern, output, re.DOTALL)
+        # Extract content with better pattern matching
+        tailored_resume, changes = extract_content_from_llm_response(output)
         
-        tailored_resume = resume_match.group(1).strip() if resume_match else ""
-        changes = changes_match.group(1).strip() if changes_match else ""
-        
-        logger.info(f"Extracted tailored resume ({len(tailored_resume)} chars) and changes ({len(changes)} chars)")
-        
-        # NEW: Check if experience section is intact and valid
-        experience_check = check_for_experience_integrity(tailored_resume, resume_text)
-        if not experience_check["is_valid"]:
-            logger.warning(f"Experience section has issues: {', '.join(experience_check['issues'])}")
-            # Do a full restoration of the original experience section
-            tailored_resume = restore_original_experiences(tailored_resume, resume_text)
-            logger.info("Restored original experience section to preserve integrity")
-            
-            # Add a note about the restoration to the changes
-            changes += "\n\nNOTE: The original experience section was preserved to maintain accuracy."
+        logger.info(f"Extracted tailored resume ({len(tailored_resume) if tailored_resume else 0} chars) and changes ({len(changes) if changes else 0} chars)")
         
         # Validate extracted resume
         if not tailored_resume or "\\begin{document}" not in tailored_resume or "\\end{document}" not in tailored_resume:
@@ -1718,7 +1960,7 @@ def generate_tailored_resume(resume_text: str, job_description: str, analysis: D
         return {
             "status": "success",
             "tailored_resume": tailored_resume,
-            "changes": changes,
+            "changes": changes if changes else "Resume tailored to match job description requirements.",
             "processing_time": processing_time
         }
     except Exception as e:
@@ -1732,7 +1974,6 @@ def generate_tailored_resume(resume_text: str, job_description: str, analysis: D
             "tailored_resume": fallback_latex,
             "changes": f"Error occurred during resume generation: {str(e)}. A fallback resume has been created."
         }
-
 def create_fallback_resume(resume_text: str, job_description: str, analysis: Dict) -> str:
     """
     Create a fallback resume when LLM generation fails.
@@ -2073,15 +2314,31 @@ def compile_latex_to_pdf(latex_content: str) -> Tuple[str, str]:
         try:
             logger.info(f"Attempting PDF generation using {generator.name}")
             if generator.name == "pdflatex":
-                return compile_with_pdflatex(latex_content), generator.name
+                pdf_data = compile_with_pdflatex(latex_content)
+                if pdf_data:
+                    logger.info(f"PDF generation successful using {generator.name}, size: {len(pdf_data)} bytes")
+                    return pdf_data, generator.name
             elif generator.name == "reportlab":
-                return compile_with_reportlab(latex_content), generator.name
+                pdf_data = compile_with_reportlab(latex_content)
+                if pdf_data:
+                    logger.info(f"PDF generation successful using {generator.name}, size: {len(pdf_data)} bytes")
+                    return pdf_data, generator.name
             elif generator.name == "error_pdf":
-                return generate_error_pdf(), generator.name
+                pdf_data = generate_error_pdf()
+                if pdf_data:
+                    logger.info(f"Generated error PDF, size: {len(pdf_data)} bytes")
+                    return pdf_data, generator.name
         except Exception as e:
             logger.exception(f"{generator.name} failed: {str(e)}")
     
-    raise RuntimeError("All PDF generation methods failed")
+    # Last resort - make sure we always return something
+    try:
+        emergency_pdf = generate_error_pdf()
+        return emergency_pdf, "emergency_fallback"
+    except Exception as emergency_error:
+        logger.exception(f"Even emergency PDF generation failed: {str(emergency_error)}")
+        # Return a tiny valid PDF as base64
+        return "JVBERi0xLjAKJSUlCjEgMCBvYmoKPDwKL1R5cGUgL0NhdGFsb2cKL1BhZ2VzIDIgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9UeXBlIC9QYWdlcwovS2lkcyBbMyAwIFJdCi9Db3VudCAxCj4+CmVuZG9iagozIDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9NZWRpYUJveCBbMCAwIDMgM10KL0NvbnRlbnRzIDQgMCBSCi9QYXJlbnQgMiAwIFIKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL0xlbmd0aCA0NAo+PgpzdHJlYW0KcSAwLjEgMCAwIDAuMSAwIDAgY20gL0ltMSBEbyBRCmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDUKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMTkwIDAwMDAwIG4gCnRyYWlsZXIKPDwKL1Jvb3QgMSAwIFIKL1NpemUgNQo+PgpzdGFydHhyZWYKMjgyCiUlRU9G", "minimal_pdf"
 
 def compile_with_pdflatex(latex_content: str) -> str:
     """Uses pdflatex to compile LaTeX and returns a base64-encoded PDF."""
@@ -2469,6 +2726,284 @@ def evaluate_resume_content(original_latex: str, tailored_latex: str) -> Dict[st
         "fix_suggestions": fix_suggestions
     }
 
+
+def process_resume_in_background(resume_content, job_description, model, resume_format, task_id):
+    """Process the resume in a background thread with progress updates"""
+    global task_status
+    
+    try:
+        # Ensure model is not None or empty string
+        if not model:
+            model = config.DEFAULT_MODEL
+            
+        # Log the model being used for better debugging
+        logger.info(f"Background processing started with model: {model}")
+        update_task_status(0, 'starting', f'Initializing resume processing with model {model}...')
+        
+        # Extract text from resume if it's a PDF
+        if resume_format.lower() == 'pdf':
+            update_task_status(5, 'extracting', 'Extracting text from PDF resume...')
+            resume_text = extract_text_from_pdf(resume_content)
+            if not resume_text:
+                update_task_status(progress=10, status='error', 
+                                   message='Failed to extract text from PDF', 
+                                   error='PDF extraction failed')
+                raise ValueError("Failed to extract text from PDF resume")
+        else:
+            resume_text = resume_content
+        
+        # Store original LaTeX for structure comparison
+        original_latex = None
+        if isinstance(resume_text, str) and "\\begin{document}" in resume_text:
+            original_latex = resume_text
+        
+        update_task_status(10, 'analyzing', 'Analyzing resume content...')
+        
+        # Validate resume text
+        if not resume_text or len(resume_text.strip()) < config.MIN_RESUME_LENGTH:
+            update_task_status(progress=15, status='error', 
+                               message='Resume text is too short', 
+                               error='Resume text too short or invalid')
+            raise ValueError("The resume text is too short or could not be extracted properly.")
+        
+        # Create chunks
+        update_task_status(15, 'chunking', 'Breaking resume into analyzable chunks...')
+        resume_chunks = create_chunks(resume_text, "resume")
+        job_chunks = create_chunks(job_description, "job")
+        
+        update_task_status(20, 'preparing', 'Preparing for semantic analysis...')
+        
+        # Handle vector store
+        collection_id = compute_collection_id(resume_text, job_description)
+        vector_store = None
+        relevant_chunks = None
+        retrieval_method = "none"
+        
+        if embeddings:
+            update_task_status(25, 'embedding', 'Creating semantic vector representation...')
+            vector_store = create_or_load_vector_store(resume_chunks + job_chunks, collection_id)
+            
+            if vector_store:
+                update_task_status(30, 'retrieval', 'Setting up retrieval system...')
+                retriever = create_hybrid_retriever(resume_chunks, job_chunks, vector_store, collection_id)
+                
+                if retriever:
+                    update_task_status(35, 'searching', 'Finding relevant content...')
+                    # Determine retrieval method for logging
+                    if isinstance(retriever, dict) and 'bm25' in retriever and 'vector' in retriever:
+                        retrieval_method = "all"
+                    elif config.RETRIEVAL_MODE.lower() == 'hybrid':
+                        retrieval_method = "hybrid"
+                    elif config.RETRIEVAL_MODE.lower() == 'dense':
+                        retrieval_method = "dense"
+                    elif config.RETRIEVAL_MODE.lower() == 'bm25':
+                        retrieval_method = "bm25"
+                    
+                    # Perform retrieval with dynamic queries
+                    relevant_chunks = retrieve_relevant_chunks(retriever, resume_chunks, job_chunks)
+        
+        # Double-check the model parameter before LLM calls
+        if not model:
+            logger.warning("Model parameter is empty or None, using default config model")
+            model = config.DEFAULT_MODEL
+            
+        # If model is still empty, use a reasonable fallback
+        if not model:
+            model = "llama3.2"  # Hardcoded fallback for safety
+            logger.warning(f"Model still empty, falling back to hardcoded model: {model}")
+            
+        # Verify model exists in Ollama
+        try:
+            models_response = ollama.list()
+            
+            # Extract available model names directly
+            available_models = []
+            for model_obj in models_response:
+                model_name = getattr(model_obj, 'model', None)
+                if model_name:
+                    available_models.append(model_name)
+            
+            logger.info(f"Available models: {available_models}")
+            
+            if model not in available_models:
+                logger.warning(f"Selected model '{model}' not in available models, finding alternative")
+                # Find best alternative
+                if available_models:
+                    # Find the most appropriate model
+                    if "llama3.2" in available_models:
+                        model = "llama3.2"
+                    elif any(m.startswith("llama") for m in available_models):
+                        llama_models = [m for m in available_models if m.startswith("llama")]
+                        model = llama_models[0]
+                    else:
+                        model = available_models[0]
+                    
+                    logger.info(f"Using alternative model: {model}")
+                else:
+                    logger.warning(f"No models available, falling back to: {model}")
+        except Exception as model_error:
+            logger.error(f"Error checking available models: {str(model_error)}")
+            # Continue with provided model
+        
+        # Final safety check
+        if not model:
+            model = "mistral"  # Last resort fallback
+            logger.warning(f"After all checks, model still empty. Using fallback: {model}")
+        
+        # Analyze with LLM
+        update_task_status(40, 'llm_analysis', f'Analyzing resume against job description using {model}...')
+        logger.info(f"Calling LLM analysis with model: {model}")
+        analysis = analyze_with_llm(resume_text, job_description, model)
+        
+        # Generate tailored resume
+        update_task_status(60, 'generating', f'Generating tailored resume using {model}...')
+        logger.info(f"Calling resume tailoring with model: {model}")
+        result = generate_tailored_resume(resume_text, job_description, analysis, relevant_chunks, model)
+        
+        # Add format validation and correction
+        update_task_status(80, 'validating', 'Validating resume format and content...')
+        evaluation = None
+        
+        # Validate structure if original LaTeX is available
+        if original_latex and result.get("tailored_resume"):
+            tailored_latex = result.get("tailored_resume")
+            evaluation = check_for_experience_integrity(tailored_latex, original_latex)
+            
+            # Fix issues if found
+            if not evaluation["is_valid"]:
+                update_task_status(85, 'fixing', 'Fixing structure issues in resume...')
+                
+                # Check for duplicate entries
+                duplicate_check = check_for_duplicate_experiences(tailored_latex, original_latex)
+                if duplicate_check["has_duplicates"]:
+                    tailored_latex = fix_duplicate_experiences(tailored_latex, original_latex)
+                
+                # If structure is still broken, restore original experiences
+                if check_for_experience_integrity(tailored_latex, original_latex)["is_valid"] == False:
+                    tailored_latex = restore_original_experiences(tailored_latex, original_latex)
+                
+                # Update the result with fixed content
+                result["tailored_resume"] = tailored_latex
+                result["changes"] = (result.get("changes", "") or "") + "\n\nStructure issues were automatically fixed to preserve your original experience details."
+        
+        # Generate PDF - ensure this completes and returns data
+        update_task_status(90, 'pdf_generation', 'Generating PDF document...')
+        pdf_base64 = None
+        pdf_method = None
+        try:
+            logger.info("Starting PDF generation from LaTeX")
+            pdf_base64, pdf_method = compile_latex_to_pdf(result.get("tailored_resume", ""))
+            
+            if not pdf_base64:
+                logger.error("PDF generation returned empty data")
+                pdf_base64 = generate_error_pdf()
+                pdf_method = "error_pdf"
+            else:
+                # Verify we have valid PDF base64 data
+                pdf_data_len = len(pdf_base64)
+                logger.info(f"PDF generation successful using {pdf_method}, size: {pdf_data_len} bytes")
+                
+                # Additional validation for base64 data
+                if pdf_data_len < 100:  # Suspiciously small
+                    logger.warning(f"Suspiciously small PDF data: {pdf_data_len} bytes. Generating fallback.")
+                    pdf_base64 = generate_error_pdf()
+                    pdf_method = "error_pdf_fallback"
+        except Exception as pdf_error:
+            logger.error(f"Error in PDF generation: {str(pdf_error)}")
+            pdf_base64 = generate_error_pdf()
+            pdf_method = "error_pdf"
+            logger.info("Generated error PDF as fallback")
+        
+        # Prepare final response
+        update_task_status(95, 'finalizing', 'Finalizing tailored resume...')
+        
+        # Include evaluation results
+        if evaluation:
+            result["evaluation"] = evaluation
+        
+        # Add original LaTeX for comparison if available
+        if original_latex:
+            result["original_latex"] = original_latex
+        
+        # Ensure we have PDF data before finishing
+        if not pdf_base64:
+            logger.error("Still no PDF data after fallbacks - creating last resort minimal PDF")
+            # Hardcoded minimal valid PDF as a last resort
+            pdf_base64 = "JVBERi0xLjAKJSUlCjEgMCBvYmoKPDwKL1R5cGUgL0NhdGFsb2cKL1BhZ2VzIDIgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9UeXBlIC9QYWdlcwovS2lkcyBbMyAwIFJdCi9Db3VudCAxCj4+CmVuZG9iagozIDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9NZWRpYUJveCBbMCAwIDMgM10KL0NvbnRlbnRzIDQgMCBSCi9QYXJlbnQgMiAwIFIKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL0xlbmd0aCA0NAo+PgpzdHJlYW0KcSAwLjEgMCAwIDAuMSAwIDAgY20gL0ltMSBEbyBRCmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDUKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMTkwIDAwMDAwIG4gCnRyYWlsZXIKPDwKL1Jvb3QgMSAwIFIKL1NpemUgNQo+PgpzdGFydHhyZWYKMjgyCiUlRU9G"
+            pdf_method = "minimal_emergency_pdf"
+        
+        # Save result to cache for retrieval by the endpoint
+        final_result = {
+            "status": "success",
+            "latex": result.get("tailored_resume", ""),
+            "pdf": pdf_base64,  # Make sure PDF is included and valid
+            "summary": result.get("changes", "") or "Resume tailored to match job description.",
+            "analysis": analysis,
+            "pdf_method": pdf_method,
+            "processing_time": time.time() - task_status['started_at'],
+            "model_used": model,
+            "embedding_used": embeddings is not None,
+            "retrieval_method": retrieval_method,
+            "collection_id": collection_id,
+            "evaluation": evaluation if evaluation else {},
+            "original_latex": original_latex if original_latex else None
+        }
+        
+        # IMPORTANT: Log the complete task information to verify everything is set
+        logger.info(f"Task {task_id} completed with PDF size: {len(pdf_base64)} bytes, LaTeX size: {len(result.get('tailored_resume', ''))}")
+        
+        # Store the result before marking the task as complete
+        result_cache[task_id] = final_result
+        
+        # Mark as complete only when everything including PDF is ready
+        update_task_status(100, 'completed', f'Resume tailoring completed successfully using {model}!')
+        
+    except Exception as e:
+        logger.exception(f"Error in background processing: {str(e)}")
+        
+        # Create a fallback response for error case
+        fallback_latex = None
+        try:
+            fallback_latex = create_fallback_resume(
+                resume_text if 'resume_text' in locals() else "", 
+                job_description, 
+                analysis if 'analysis' in locals() else {}
+            )
+        except Exception as fallback_error:
+            logger.exception(f"Error creating fallback resume: {str(fallback_error)}")
+            # Super simple fallback if everything else fails
+            fallback_latex = r"\documentclass{article}\n\usepackage{geometry}\n\geometry{margin=1in}\n\begin{document}\nError processing resume. Please try again.\n\end{document}"
+        
+        # Generate PDF for the fallback
+        pdf_base64 = None
+        pdf_method = None
+        try:
+            pdf_base64, pdf_method = compile_latex_to_pdf(fallback_latex)
+        except Exception:
+            try:
+                pdf_base64 = generate_error_pdf()
+                pdf_method = "error_pdf"
+            except Exception:
+                # Last resort minimal PDF
+                pdf_base64 = "JVBERi0xLjAKJSUlCjEgMCBvYmoKPDwKL1R5cGUgL0NhdGFsb2cKL1BhZ2VzIDIgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9UeXBlIC9QYWdlcwovS2lkcyBbMyAwIFJdCi9Db3VudCAxCj4+CmVuZG9iagozIDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9NZWRpYUJveCBbMCAwIDMgM10KL0NvbnRlbnRzIDQgMCBSCi9QYXJlbnQgMiAwIFIKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL0xlbmd0aCA0NAo+PgpzdHJlYW0KcSAwLjEgMCAwIDAuMSAwIDAgY20gL0ltMSBEbyBRCmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDUKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMTkwIDAwMDAwIG4gCnRyYWlsZXIKPDwKL1Jvb3QgMSAwIFIKL1NpemUgNQo+PgpzdGFydHhyZWYKMjgyCiUlRU9G"
+                pdf_method = "minimal_emergency_pdf"
+        
+        # Create the error result
+        error_result = {
+            "status": "error",
+            "latex": fallback_latex,
+            "pdf": pdf_base64,
+            "summary": f"Error occurred: {str(e)}. A fallback resume has been created.",
+            "error": str(e),
+            "pdf_method": pdf_method,
+            "model_used": model if 'model' in locals() else "unknown"
+        }
+        
+        # Store the error result in cache
+        result_cache[task_id] = error_result
+        
+        # Update task status with error
+        update_task_status(100, 'error', f'Error: {str(e)}', str(e))
 # ------------------ Main Processing Pipeline ------------------
 def process_resume_and_job(resume_content: str, job_description: str, model: str, resume_format: str = 'txt') -> Dict:
     """
@@ -2767,18 +3302,27 @@ def health_check():
     except Exception as e:
         logger.exception(f"Health check error: {str(e)}")
         return jsonify({'status': 'error', 'error': str(e)}), 500
+    
+
+
+
 
 @app.route('/models', methods=['GET'])
 def get_models():
-    """List available Ollama models."""
+    """List available Ollama models with better error handling."""
     try:
-        models_response = ollama.list()
-        models = [{'name': model.get('name')} for model in models_response.get('models', [])]
-        return jsonify({'models': models}), 200
+        models = get_available_models()
+        model_data = [{'name': model} for model in models]
+        return jsonify({'models': model_data}), 200
     except Exception as e:
-        logger.exception(f"Error fetching models: {str(e)}")
-        return jsonify({'error': str(e), 'models': []}), 500
-
+        logger.exception(f"Unhandled error in models endpoint: {str(e)}")
+        # Return fallback models instead of an error
+        return jsonify({
+            'models': [
+                {'name': 'llama3', 'description': 'Meta\'s Llama 3 model (fallback)'},
+                {'name': 'mistral', 'description': 'Mistral AI model (fallback)'}
+            ]
+        }), 200
 @app.route('/cache/clear', methods=['POST'])
 def clear_cache():
     """Clear the vector store and retriever caches."""
@@ -2885,7 +3429,7 @@ def manage_config():
 
 @app.route('/process', methods=['POST'])
 def process_endpoint():
-    """Process the resume and job description with enhanced validation and error correction."""
+    """Process the resume and job description with progress tracking and background processing."""
     try:
         data = request.json
         if not data:
@@ -2897,13 +3441,21 @@ def process_endpoint():
         model = data.get('model', config.DEFAULT_MODEL)
         resume_format = data.get('resumeFormat', 'txt')
         
-        # Track the original resume text for evaluation
-        original_resume_latex = None
+        # Validate if the model actually exists in Ollama and get a working alternative if needed
+        model = verify_model_availability(model)
+        logger.info(f"Using verified model for processing: {model}")
+                
+        # Ensure model is not None or empty string
+        if not model:
+            model = config.DEFAULT_MODEL
+            
+        # Verify model availability
+        model = verify_model_availability(model)
+        logger.info(f"Background processing started with verified model: {model}")
+        update_task_status(0, 'starting', f'Initializing resume processing with model {model}...')
         
-        # If resume is a base64 data URL, ensure it's treated as PDF
-        if isinstance(resume, str) and resume.startswith('data:application/pdf;base64,'):
-            resume_format = 'pdf'
-            logger.info(f"Detected base64 PDF data URL ({len(resume)} chars)")
+        # Log the selected model
+        logger.info(f"User selected model: {model}")
         
         # Validate inputs
         if not resume:
@@ -2914,118 +3466,46 @@ def process_endpoint():
         # Log input sizes
         input_size = len(resume) if isinstance(resume, str) else "binary data"
         logger.info(f"Processing resume ({input_size}) and job description ({len(job_description)} chars)")
-        logger.info(f"Resume format: {resume_format}")
+        logger.info(f"Resume format: {resume_format}, using model: {model}")
         
-        # Validate model
-        try:
-            models_response = ollama.list()
-            available_models = [model.get('name') for model in models_response.get('models', [])]
-            
-            if model not in available_models:
-                logger.warning(f"Requested model {model} not available, falling back to {config.DEFAULT_MODEL}")
-                model = config.DEFAULT_MODEL
-        except Exception as e:
-            logger.error(f"Error validating model: {str(e)}")
-            # Continue with requested model
+        # Reset and initialize task status
+        reset_task_status()
+        task_id = hashlib.md5(str(time.time()).encode()).hexdigest()[:12]
+        task_status['id'] = task_id
+        task_status['started_at'] = time.time()
+        task_status['status'] = 'initialized'
+        task_status['message'] = 'Processing started'
         
-        # Process the resume and job description
-        result = process_resume_and_job(resume, job_description, model, resume_format)
-        
-        # If processing completed, get the original resume LaTeX for evaluation
-        if result.get("status") == "success" and result.get("original_latex"):
-            original_resume_latex = result.get("original_latex")
-        elif resume_format != 'pdf' and isinstance(resume, str) and "\\begin{document}" in resume:
-            # If the original resume was submitted as LaTeX, use it directly
+        # Check if the resume is already in LaTeX format for evaluation later
+        original_resume_latex = None
+        if resume_format != 'pdf' and isinstance(resume, str) and "\\begin{document}" in resume:
             original_resume_latex = resume
         
-        # Perform enhanced evaluation if we have both the original and tailored LaTeX
-        if original_resume_latex and result.get("tailored_resume"):
-            tailored_latex = result.get("tailored_resume")
-            
-            # Evaluate the tailored resume
-            evaluation = evaluate_resume_content(original_resume_latex, tailored_latex)
-            result["evaluation"] = evaluation
-            
-            # Add evaluation summary to the result
-            if not evaluation["is_valid"]:
-                # Always attempt correction for any issues found, regardless of model
-                logger.warning(f"Format issues detected: {len(evaluation['issues'])} issues")
-                
-                # Create a targeted correction prompt
-                fix_prompt = create_section_correction_prompt(original_resume_latex, tailored_latex, evaluation)
-                
-                try:
-                    # Call Ollama API for correction
-                    fix_response = ollama.generate(
-                        model=model,
-                        prompt=fix_prompt,
-                        options={
-                            "temperature": 0.1,  # Keep temperature low for fixing
-                            "num_predict": 8192,  # Use larger token limit for complete resume
-                        }
-                    )
-                    
-                    fixed_latex = fix_response.get('response', '')
-                    
-                    # Validate if it contains proper LaTeX
-                    if "\\begin{document}" in fixed_latex and "\\end{document}" in fixed_latex:
-                        # Re-evaluate the fixed version
-                        re_evaluation = evaluate_resume_content(original_resume_latex, fixed_latex)
-                        
-                        if re_evaluation["is_valid"] or len(re_evaluation["issues"]) < len(evaluation["issues"]):
-                            # Use the improved version
-                            result["tailored_resume"] = fixed_latex
-                            result["evaluation"] = re_evaluation
-                            result["summary"] += "\n\nAutomatic format corrections were applied."
-                            logger.info("Successfully applied automatic format corrections")
-                            
-                            # Try to regenerate PDF with fixed version
-                            try:
-                                pdf_base64, pdf_method = compile_latex_to_pdf(fixed_latex)
-                                result["pdf"] = pdf_base64
-                                result["pdf_method"] = pdf_method
-                                logger.info("Successfully regenerated PDF after corrections")
-                            except Exception as pdf_error:
-                                logger.error(f"Error regenerating PDF after fix: {str(pdf_error)}")
-                        else:
-                            logger.warning("Fix attempt did not improve the resume format")
-                            # Try a fallback approach for persistent issues
-                            if "Projects" in evaluation["issues"][0] or "Experience" in evaluation["issues"][0]:
-                                logger.info("Attempting section-specific fallback for Projects/Experience")
-                                try:
-                                    # Create a special fallback that preserves all sections but with special attention
-                                    # to Projects and Experience sections from the original resume
-                                    fallback_latex = create_fallback_resume(original_resume_latex, job_description, analysis=result.get("analysis", {}))
-                                    fallback_evaluation = evaluate_resume_content(original_resume_latex, fallback_latex)
-                                    
-                                    if fallback_evaluation["is_valid"] or len(fallback_evaluation["issues"]) < len(evaluation["issues"]):
-                                        result["tailored_resume"] = fallback_latex
-                                        result["evaluation"] = fallback_evaluation
-                                        result["summary"] += "\n\nUsed fallback approach to preserve critical sections."
-                                        
-                                        # Regenerate PDF for fallback version
-                                        try:
-                                            pdf_base64, pdf_method = compile_latex_to_pdf(fallback_latex)
-                                            result["pdf"] = pdf_base64
-                                            result["pdf_method"] = pdf_method
-                                        except Exception:
-                                            pass  # Already logged in compile_latex_to_pdf
-                                except Exception as fallback_error:
-                                    logger.error(f"Error in fallback approach: {str(fallback_error)}")
-                    else:
-                        logger.warning("Fix attempt did not return valid LaTeX")
-                        
-                except Exception as fix_error:
-                    logger.error(f"Error attempting fix: {str(fix_error)}")
-                
-                # Add warning to summary regardless of fix success
-                result["format_warning"] = "The resume may have formatting issues. Please check the output carefully."
-            else:
-                result["format_status"] = "valid"
+        # Start background processing thread
+        processing_thread = threading.Thread(
+            target=process_resume_in_background,
+            args=(resume, job_description, model, resume_format, task_id)
+        )
+        processing_thread.daemon = True
+        processing_thread.start()
         
-        return jsonify(result), 200
+        # Return task ID for status polling
+        return jsonify({
+            'task_id': task_id,
+            'status': 'processing',
+            'message': f'Resume processing started with model {model}. Poll /process/status for progress updates and /process/result/{task_id} for results.'
+        }), 202
+        
     except Exception as e:
         logger.exception(f"Process endpoint error: {str(e)}")
+        reset_task_status()  # Reset task status in case of error
+        update_task_status(
+            progress=100, 
+            status='error', 
+            message=f'Error: {str(e)}', 
+            error=str(e)
+        )
+        
         return jsonify({
             'status': 'error',
             'error': str(e),
@@ -3071,6 +3551,120 @@ def debug_pdf_endpoint():
             'status': 'error',
             'error': str(e)
         }), 500
+    
+
+@app.route('/debug/extract', methods=['POST'])
+def debug_extract():
+    """Debug endpoint for testing content extraction."""
+    try:
+        data = request.json
+        if not data or 'content' not in data:
+            return jsonify({'error': 'No content provided'}), 400
+            
+        content = data['content']
+        extracted, changes = extract_content_from_llm_response(content)
+        
+        return jsonify({
+            'success': extracted is not None,
+            'extracted_length': len(extracted) if extracted else 0,
+            'extracted_sample': extracted[:500] + '...' if extracted else None,
+            'changes_length': len(changes) if changes else 0,
+            'changes_sample': changes[:500] + '...' if changes else None,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+def verify_model_availability(model: str) -> str:
+    """Verify model availability and return a valid model name."""
+    if not model:
+        logger.warning("Empty model parameter, using default")
+        return config.DEFAULT_MODEL or "gemma3:12b"
+    
+    try:
+        import httpx
+        
+        # Make a direct HTTP request to get available models
+        try:
+            response = httpx.get('http://localhost:11434/api/tags', timeout=5.0)
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Extract model names from the response
+                available_models = []
+                for model_obj in data.get('models', []):
+                    if 'name' in model_obj:
+                        available_models.append(model_obj['name'])
+                
+                logger.info(f"Available models via HTTP: {available_models}")
+                
+                # Clean up model name (remove :latest if present)
+                clean_model = model.split(':')[0] if ':' in model else model
+                
+                if clean_model in available_models or model in available_models:
+                    return model  # Use original model name if found
+                
+                # Find alternative model if original not available
+                if available_models:
+                    if "llama3" in available_models:
+                        alt_model = "llama3"
+                    elif any(m.startswith("llama") for m in available_models):
+                        alt_model = next(m for m in available_models if m.startswith("llama"))
+                    else:
+                        alt_model = available_models[0]
+                    
+                    logger.warning(f"Model {model} not available, using {alt_model} instead")
+                    return alt_model
+        except Exception as http_error:
+            logger.warning(f"HTTP request failed: {str(http_error)}")
+    
+    except ImportError:
+        logger.warning("httpx not available for direct API call")
+    
+    # If we got here, we couldn't verify with HTTP, try ollama.list()
+    try:
+        models_response = ollama.list()
+        
+        # Extract models based on the actual response structure
+        available_models = []
+        
+        # Try different potential response structures
+        if hasattr(models_response, 'models'):
+            # Models might be in a 'models' attribute
+            models_list = models_response.models
+            for model_obj in models_list:
+                if hasattr(model_obj, 'model'):
+                    available_models.append(model_obj.model)
+        elif isinstance(models_response, list):
+            # Models might be the response itself
+            for model_obj in models_response:
+                if hasattr(model_obj, 'model'):
+                    available_models.append(model_obj.model)
+        
+        logger.info(f"Available models via ollama.list(): {available_models}")
+        
+        # Clean up model name (remove :latest if present)
+        clean_model = model.split(':')[0] if ':' in model else model
+        
+        if clean_model in available_models or model in available_models:
+            return model  # Use original model name if found
+        
+        # Find alternative model if original not available
+        if available_models:
+            if "llama3" in available_models:
+                alt_model = "llama3"
+            elif any(m.startswith("llama") for m in available_models):
+                alt_model = next(m for m in available_models if m.startswith("llama"))
+            else:
+                alt_model = available_models[0]
+            
+            logger.warning(f"Model {model} not available, using {alt_model} instead")
+            return alt_model
+    except Exception as e:
+        logger.warning(f"Error checking models via ollama.list(): {str(e)}")
+    
+    # If we got here, we couldn't verify models at all, return original model
+    logger.warning(f"Could not verify model availability, using original model: {model}")
+    return model
 
 @app.route('/debug/pdf-extraction', methods=['POST'])
 def debug_pdf_extraction():
@@ -3153,6 +3747,32 @@ def debug_pdf_extraction():
     except Exception as e:
         logger.exception(f"PDF extraction debug endpoint error: {str(e)}")
         return jsonify({'status': 'error', 'error': str(e)}), 500
+    
+
+@app.route('/process/status', methods=['GET'])
+def get_process_status():
+    """Return the current task status"""
+    global task_status
+    return jsonify(task_status), 200
+
+@app.route('/process/result/<task_id>', methods=['GET'])
+def get_process_result(task_id):
+    """Get the result of a processing task"""
+    if task_id not in result_cache:
+        return jsonify({
+            'status': 'not_found',
+            'error': 'Task ID not found or processing not completed yet'
+        }), 404
+    
+    # Get the result from cache
+    result = result_cache[task_id]
+    
+    # Optionally clear the cache for this task to free memory
+    # If using this, uncomment the line below:
+    # if task_status['id'] != task_id:  # Only remove if not the current task
+    #     del result_cache[task_id]
+    
+    return jsonify(result), 200
 
 if __name__ == '__main__':
     # Create required directories

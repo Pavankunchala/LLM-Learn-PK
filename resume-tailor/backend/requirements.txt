@@ -5,3 +5,7 @@ python-dotenv
 pdflatex
 watchdog
 gunicorn
+langchain 
+langchain-ollama
+langchain-huggingface
+chroma

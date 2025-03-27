@@ -1,62 +1,186 @@
 import React, { useEffect, useState } from 'react';
 
+// Optional debugging component - uncomment to use
+// import ModelDebugger from './ModelDebugger';
+
 const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessing }) => {
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [fetchRetries, setFetchRetries] = useState(0);
+  const [sortBy, setSortBy] = useState('name'); // New state for sorting
+  const [sortOrder, setSortOrder] = useState('asc'); // New state for sort order
 
   useEffect(() => {
-    // Fetch available models from the backend
-    const fetchModels = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost:5000/models');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch models');
-        }
-        
-        const data = await response.json();
-        
-        if (data.models && Array.isArray(data.models)) {
-          setModels(data.models);
-          
-          // If no model is selected and we have models, select the first one
-          if (!selectedModel && data.models.length > 0) {
-            onChange(data.models[0].name);
-          }
-          
-          // If the selected model isn't in the list, select the first available
-          if (selectedModel && !data.models.find(m => m.name === selectedModel) && data.models.length > 0) {
-            onChange(data.models[0].name);
-          }
-        } else {
-          throw new Error('Invalid model data received');
-        }
-      } catch (err) {
-        console.error('Error fetching models:', err);
-        setError(err.message);
-        
-        // Fallback models in case the API fails
-        setModels([
-          { 
-            name: 'llama3', 
-            description: 'Meta\'s Llama 3 - Good general-purpose model (Fallback)',
-            size: 'Unknown'
-          },
-          { 
-            name: 'mistral', 
-            description: 'Mistral AI\'s base model - Excellent general-purpose model (Fallback)',
-            size: 'Unknown'
-          }
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchModels();
-  }, [selectedModel, onChange]);
+  }, [selectedModel, onChange, fetchRetries]);
+
+  const fetchModels = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:5000/models');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Models API response:", data); // Debug output
+      
+      // Handle both response formats (direct models array or wrapped response)
+      const modelsData = data.models || data;
+      
+      if (modelsData && Array.isArray(modelsData)) {
+        // Filter out any invalid models (without name property)
+        const validModels = modelsData.filter(model => model && model.name);
+        
+        if (validModels.length === 0) {
+          throw new Error('No valid models returned from the server');
+        }
+        
+        // Add descriptions if missing and enhance with additional properties
+        const enhancedModels = validModels.map(model => ({
+          ...model,
+          description: model.description || getDefaultDescription(model.name),
+          performance: estimatePerformance(model.name),
+          speed: getModelSpeed(model.name),
+          family: detectModelFamily(model.name),
+          tags: generateModelTags(model)
+        }));
+        
+        console.log("Enhanced models:", enhancedModels); // Debug output
+        setModels(enhancedModels);
+        
+        // If no model is selected and we have models, select the first one
+        if ((!selectedModel || selectedModel === '') && enhancedModels.length > 0) {
+          console.log("Setting initial model:", enhancedModels[0].name);
+          onChange(enhancedModels[0].name);
+        }
+      } else {
+        throw new Error('Invalid model data received');
+      }
+    } catch (err) {
+      console.error('Error fetching models:', err);
+      setError(err.message);
+      
+      // Retry logic (only retry a few times)
+      if (fetchRetries < 2) {
+        setFetchRetries(prev => prev + 1);
+        setTimeout(fetchModels, 1000); // Try again after 1 second
+        return;
+      }
+      
+      // Fallback models if all retries fail
+      const fallbackModels = [
+        { 
+          name: 'llama3', 
+          description: 'Meta\'s Llama 3 - Good general-purpose model (Fallback)',
+          performance: 'Good',
+          speed: 'Fast',
+          family: 'llama',
+          tags: ['fallback', 'general-purpose']
+        },
+        { 
+          name: 'mistral', 
+          description: 'Mistral AI\'s base model - Excellent general-purpose model (Fallback)',
+          performance: 'Very Good',
+          speed: 'Moderate',
+          family: 'mistral',
+          tags: ['fallback', 'general-purpose']
+        }
+      ];
+      
+      setModels(fallbackModels);
+      
+      // Select the first fallback model only if no model is already selected
+      if (!selectedModel || selectedModel === '') {
+        console.log("Setting fallback model:", fallbackModels[0].name);
+        onChange('llama3');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to detect model family from name
+  const detectModelFamily = (modelName) => {
+    if (!modelName) return 'unknown';
+    
+    const name = modelName.toLowerCase();
+    if (name.includes('llama')) return 'llama';
+    if (name.includes('mistral')) return 'mistral';
+    if (name.includes('phi')) return 'phi';
+    if (name.includes('gemma')) return 'gemma';
+    if (name.includes('qwen')) return 'qwen';
+    if (name.includes('mixtral')) return 'mixtral';
+    if (name.includes('deepseek')) return 'deepseek';
+    if (name.includes('orca')) return 'orca';
+    
+    return 'other';
+  };
+
+  // Generate tags for model
+  const generateModelTags = (model) => {
+    const tags = [];
+    const name = model.name.toLowerCase();
+    
+    // Add size-based tags
+    if (name.includes('3b') || name.includes('7b') || model.parameter_size?.includes('3') || model.parameter_size?.includes('7')) {
+      tags.push('small');
+    } else if (name.includes('13b') || name.includes('14b') || model.parameter_size?.includes('13') || model.parameter_size?.includes('14')) {
+      tags.push('medium');
+    } else if (name.includes('70b') || model.parameter_size?.includes('70')) {
+      tags.push('large');
+    }
+    
+    // Add capability tags
+    if (name.includes('vision')) tags.push('vision');
+    if (name.includes('coder')) tags.push('coding');
+    if (name.includes('chat')) tags.push('chat');
+    if (name.includes('instruct')) tags.push('instruction');
+    
+    // Add quantization tag if available
+    if (model.quantization) {
+      const quant = model.quantization.toLowerCase();
+      if (quant.includes('q4')) tags.push('4-bit');
+      else if (quant.includes('q5')) tags.push('5-bit');
+      else if (quant.includes('q8')) tags.push('8-bit');
+      else if (quant.includes('f16')) tags.push('16-bit');
+    }
+    
+    return tags;
+  };
+
+  // Get default description for a model
+  const getDefaultDescription = (modelName) => {
+    if (!modelName) return 'No description available';
+    
+    const name = modelName.toLowerCase();
+    if (name.includes('llama')) return 'Meta\'s Llama model family - versatile general-purpose model';
+    if (name.includes('mistral')) return 'Mistral AI\'s model - excellent reasoning and instruction following';
+    if (name.includes('phi')) return 'Microsoft Phi model - compact and efficient';
+    if (name.includes('gemma')) return 'Google\'s Gemma model - lightweight and performant';
+    if (name.includes('qwen')) return 'Qwen model by Alibaba - strong multilingual capabilities';
+    if (name.includes('mixtral')) return 'Mistral\'s mixture of experts model - high capability';
+    if (name.includes('deepseek')) return 'DeepSeek model - state-of-the-art capabilities';
+    
+    return 'General-purpose language model';
+  };
+  
+  // Estimate performance based on model name
+  const estimatePerformance = (modelName) => {
+    if (!modelName) return 'Unknown';
+    
+    const name = modelName.toLowerCase();
+    // Check for model size indicators in name
+    if (name.includes('70b') || name.includes('opus')) return 'Excellent';
+    if (name.includes('13b') || name.includes('14b') || name.includes('medium')) return 'Very Good';
+    if (name.includes('8b') || name.includes('7b') || name.includes('small')) return 'Good';
+    if (name.includes('3b') || name.includes('tiny')) return 'Basic';
+    
+    // Default performance estimation
+    return 'Good';
+  };
 
   // Format file size to human readable format
   const formatFileSize = (bytes) => {
@@ -76,22 +200,31 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
 
   // Get model icon based on name
   const getModelIcon = (modelName) => {
+    if (!modelName) return '🤖'; // Default icon
+    
     const name = modelName.toLowerCase();
     if (name.includes('llama')) return '🦙';
     if (name.includes('mistral')) return '🌪️';
     if (name.includes('phi')) return 'Φ';
     if (name.includes('gemma')) return '💎';
+    if (name.includes('qwen')) return '🔍';
     if (name.includes('mixtral')) return '🔄';
     if (name.includes('dolphin')) return '🐬';
     if (name.includes('orca')) return '🐋';
     if (name.includes('wizard')) return '🧙';
     if (name.includes('neural')) return '🧠';
     if (name.includes('code')) return '👨‍💻';
+    if (name.includes('deepseek')) return '🔎';
+    
     return '🤖';
   };
 
   // Get model card style based on name (for gradient background)
   const getModelCardStyle = (modelName) => {
+    if (!modelName) {
+      return { background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)' }; // Default gradient
+    }
+    
     const name = modelName.toLowerCase();
     if (name.includes('llama')) 
       return { background: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)' };
@@ -101,12 +234,135 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
       return { background: 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)' };
     if (name.includes('gemma')) 
       return { background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' };
+    if (name.includes('qwen')) 
+      return { background: 'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)' };
     if (name.includes('mixtral')) 
       return { background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' };
     if (name.includes('orca')) 
       return { background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' };
+    if (name.includes('deepseek'))
+      return { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' };
     
-    return { background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)' };
+    return { background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)' }; // Default gradient
+  };
+
+  // Get model speed rating
+  const getModelSpeed = (modelName) => {
+    if (!modelName) return 'Unknown';
+    
+    const name = modelName.toLowerCase();
+    if (name.includes('3b') || name.includes('tiny') || name.includes('small'))
+      return 'Very Fast';
+    if (name.includes('7b') || name.includes('8b'))
+      return 'Fast';
+    if (name.includes('13b') || name.includes('14b') || name.includes('medium'))
+      return 'Moderate';
+    if (name.includes('70b') || name.includes('large') || name.includes('opus'))
+      return 'Slower';
+    
+    return 'Moderate';
+  };
+
+  // Enhanced model selection handler
+  const handleModelSelection = (modelName) => {
+    console.log("Model selected:", modelName); // Debug output
+    onChange(modelName);
+  };
+
+  // Sort models function
+  const sortModels = (a, b) => {
+    if (sortBy === 'name') {
+      return sortOrder === 'asc' 
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
+    } else if (sortBy === 'size') {
+      const sizeA = a.size || 0;
+      const sizeB = b.size || 0;
+      return sortOrder === 'asc' ? sizeA - sizeB : sizeB - sizeA;
+    } else if (sortBy === 'performance') {
+      const perfMap = {
+        'Excellent': 4,
+        'Very Good': 3,
+        'Good': 2,
+        'Basic': 1,
+        'Unknown': 0
+      };
+      const perfA = perfMap[a.performance] || 0;
+      const perfB = perfMap[b.performance] || 0;
+      return sortOrder === 'asc' ? perfA - perfB : perfB - perfA;
+    }
+    return 0;
+  };
+
+  // Handle sorting change
+  const handleSortChange = (newSortBy) => {
+    if (sortBy === newSortBy) {
+      // Toggle order if clicking the same sort option
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new sort option with default ascending order
+      setSortBy(newSortBy);
+      setSortOrder('asc');
+    }
+  };
+
+  // Safely render a model card
+  const renderModelCard = (model) => {
+    if (!model || !model.name) return null;
+    
+    return (
+      <div 
+        key={model.name}
+        className={`model-card ${selectedModel === model.name ? 'selected' : ''}`}
+        onClick={() => handleModelSelection(model.name)}
+      >
+        <div className="model-header" style={getModelCardStyle(model.name)}>
+          <div className="model-icon">{getModelIcon(model.name)}</div>
+          <div className="model-name">{model.name}</div>
+          {selectedModel === model.name && 
+            <div className="selection-badge">Selected</div>
+          }
+        </div>
+        <div className="model-body">
+          <p className="model-description">{model.description || getDefaultDescription(model.name)}</p>
+          <div className="model-stats">
+            <div className="stat-item">
+              <div className="stat-icon">💾</div>
+              <div className="stat-value">{formatFileSize(model.size)}</div>
+            </div>
+            {model.parameter_size && (
+              <div className="stat-item" title="Model parameter size">
+                <div className="stat-icon">🧠</div>
+                <div className="stat-value">{model.parameter_size}</div>
+              </div>
+            )}
+            {model.modified_at && (
+              <div className="stat-item">
+                <div className="stat-icon">🔄</div>
+                <div className="stat-value">
+                  {new Date(model.modified_at).toLocaleDateString()}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="model-tags">
+          {model.tags && model.tags.map((tag, idx) => (
+            <span key={idx} className="model-tag">{tag}</span>
+          ))}
+        </div>
+        <div className="model-footer">
+          <div className="model-capability-badge">
+            <span>Performance: </span>
+            {model.performance || estimatePerformance(model.name)}
+          </div>
+          <div className="model-capability-badge">
+            <span>Speed: </span>
+            {model.speed || getModelSpeed(model.name)}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -140,7 +396,7 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
               <h3 className="no-models-title">No models found</h3>
               <p>Please make sure Ollama is running and has models installed.</p>
               <div className="code-block">
-                <code>ollama pull modelname</code>
+                <code>ollama pull llama3</code>
                 <button 
                   className="copy-button"
                   onClick={() => navigator.clipboard.writeText('ollama pull llama3')}
@@ -151,56 +407,46 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
               </div>
             </div>
           ) : (
-            <div className="models-grid">
-              {models.map((model) => (
-                <div 
-                  key={model.name}
-                  className={`model-card ${selectedModel === model.name ? 'selected' : ''}`}
-                  onClick={() => onChange(model.name)}
-                >
-                  <div className="model-header" style={getModelCardStyle(model.name)}>
-                    <div className="model-icon">{getModelIcon(model.name)}</div>
-                    <div className="model-name">{model.name}</div>
-                    {selectedModel === model.name && 
-                      <div className="selection-badge">Selected</div>
-                    }
-                  </div>
-                  <div className="model-body">
-                    <p className="model-description">{model.description || 'No description available'}</p>
-                    <div className="model-stats">
-                      <div className="stat-item">
-                        <div className="stat-icon">💾</div>
-                        <div className="stat-value">{formatFileSize(model.size)}</div>
-                      </div>
-                      {model.modified_at && (
-                        <div className="stat-item">
-                          <div className="stat-icon">🔄</div>
-                          <div className="stat-value">
-                            {new Date(model.modified_at).toLocaleDateString()}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="model-footer">
-                    <div className="model-capability-badge">
-                      <span>Performance: </span>
-                      {model.name.includes('70b') ? 'Excellent' : 
-                       model.name.includes('13b') ? 'Very Good' : 'Good'}
-                    </div>
-                    <div className="model-capability-badge">
-                      <span>Speed: </span>
-                      {model.name.includes('8b') ? 'Fast' : 
-                       model.name.includes('7b') ? 'Fast' :
-                       model.name.includes('3b') ? 'Very Fast' : 'Moderate'}
-                    </div>
-                  </div>
+            <>
+              <div className="models-tools">
+                <div className="model-count">
+                  <span className="model-count-badge">{models.length}</span> models available
                 </div>
-              ))}
-            </div>
+                <div className="sort-options">
+                  <span>Sort by: </span>
+                  <button 
+                    className={`sort-button ${sortBy === 'name' ? 'active' : ''}`}
+                    onClick={() => handleSortChange('name')}
+                  >
+                    Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                  </button>
+                  <button 
+                    className={`sort-button ${sortBy === 'size' ? 'active' : ''}`}
+                    onClick={() => handleSortChange('size')}
+                  >
+                    Size {sortBy === 'size' && (sortOrder === 'asc' ? '↑' : '↓')}
+                  </button>
+                  <button 
+                    className={`sort-button ${sortBy === 'performance' ? 'active' : ''}`}
+                    onClick={() => handleSortChange('performance')}
+                  >
+                    Performance {sortBy === 'performance' && (sortOrder === 'asc' ? '↑' : '↓')}
+                  </button>
+                </div>
+              </div>
+              <div className="models-grid">
+                {/* Sort models based on current sort criteria */}
+                {[...models].sort(sortModels).map(model => 
+                  model && model.name ? renderModelCard(model) : null
+                )}
+              </div>
+            </>
           )}
         </>
       )}
+      
+      {/* Uncomment to enable the model debugger */}
+      {/* <ModelDebugger selectedModel={selectedModel} availableModels={models} /> */}
       
       <div className="action-buttons">
         <button 
@@ -379,6 +625,66 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
           opacity: 1;
         }
         
+        /* Models tools */
+        .models-tools {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          padding: 0 0.5rem;
+        }
+        
+        .model-count {
+          font-size: 0.9rem;
+          color: var(--gray-600);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        
+        .model-count-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background-color: var(--primary);
+          color: white;
+          width: 24px;
+          height: 24px;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 0.8rem;
+        }
+        
+        .sort-options {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
+          color: var(--gray-600);
+        }
+        
+        .sort-button {
+          background: none;
+          border: none;
+          padding: 0.25rem 0.5rem;
+          cursor: pointer;
+          font-size: 0.85rem;
+          border-radius: 4px;
+          color: var(--gray-600);
+          transition: all 0.2s;
+        }
+        
+        .sort-button:hover {
+          background-color: var(--gray-100);
+          color: var(--gray-900);
+        }
+        
+        .sort-button.active {
+          background-color: var(--gray-200);
+          color: var(--gray-900);
+          font-weight: 500;
+        }
+        
         /* Models grid */
         .models-grid {
           display: grid;
@@ -398,6 +704,7 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
           display: flex;
           flex-direction: column;
           border: 1px solid var(--gray-200);
+          position: relative;
         }
         
         .model-card:hover {
@@ -439,6 +746,7 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
           font-weight: 600;
           flex: 1;
           text-transform: capitalize;
+          word-break: break-word;
         }
         
         .selection-badge {
@@ -473,6 +781,7 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
           display: flex;
           gap: 1rem;
           justify-content: space-between;
+          flex-wrap: wrap;
         }
         
         .stat-item {
@@ -487,20 +796,42 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
           font-size: 1rem;
         }
         
+        /* Model tags */
+        .model-tags {
+          padding: 0 1.5rem;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+        
+        .model-tag {
+          display: inline-block;
+          font-size: 0.75rem;
+          background-color: var(--gray-100);
+          color: var(--gray-700);
+          padding: 0.15rem 0.5rem;
+          border-radius: 20px;
+          border: 1px solid var(--gray-200);
+        }
+        
         .model-footer {
           padding: 1rem 1.5rem;
           border-top: 1px solid var(--gray-100);
           display: flex;
           flex-wrap: wrap;
           gap: 0.5rem;
+          background-color: var(--gray-50);
         }
         
         .model-capability-badge {
-          background-color: var(--gray-100);
+          background-color: white;
           color: var(--gray-700);
           font-size: 0.8rem;
           padding: 0.25rem 0.5rem;
           border-radius: 0.25rem;
+          border: 1px solid var(--gray-200);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         
         .model-capability-badge span {
@@ -579,6 +910,16 @@ const ModelSelection = ({ selectedModel, onChange, onBack, onProcess, isProcessi
           
           .model-card {
             max-width: 100%;
+          }
+          
+          .models-tools {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+          }
+          
+          .sort-options {
+            flex-wrap: wrap;
           }
         }
       `}</style>

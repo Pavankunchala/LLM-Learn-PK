@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ResumeUpload from './components/ResumeUpload';
@@ -7,39 +7,141 @@ import ModelSelection from './components/ModelSelection';
 import ResultPreview from './components/ResultPreview';
 import ProcessingOverlay from './components/ProcessingOverlay';
 
-function App() {
+const App = () => {
+  // State management
   const [resumeData, setResumeData] = useState('');
   const [resumePdfBase64, setResumePdfBase64] = useState(null);
+  const [resumeFormat, setResumeFormat] = useState('txt');
   const [jobDescription, setJobDescription] = useState('');
   const [selectedModel, setSelectedModel] = useState('llama3');
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [activeStep, setActiveStep] = useState(1);
-
-  const handleResumeUpload = (text, pdfBase64) => {
+  const [taskId, setTaskId] = useState(null);
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState('');
+  
+  // Set the selected model in the window for the ProcessingOverlay to access
+  useEffect(() => {
+    if (selectedModel) {
+      window.selectedModel = selectedModel;
+    }
+  }, [selectedModel]);
+  
+  // Poll for task status when processing
+  useEffect(() => {
+    let intervalId;
+    
+    if (isProcessing && taskId) {
+      intervalId = setInterval(pollTaskStatus, 2000);
+    }
+    
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isProcessing, taskId]);
+  
+  // Function to poll for task status
+  const pollTaskStatus = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/process/status');
+      if (!response.ok) {
+        throw new Error(`Status check failed with status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Task status:", data);
+      
+      // Update progress and status
+      setProgress(data.progress || 0);
+      setStatus(data.status || '');
+      
+      // If task is completed or errored, fetch the result
+      if (data.status === 'completed' || data.status === 'error') {
+        if (data.status === 'error') {
+          console.error("Task error:", data.error);
+        }
+        fetchResult();
+      }
+    } catch (error) {
+      console.error("Error polling status:", error);
+      // Don't stop polling on error, keep trying
+    }
+  };
+  
+  // Function to fetch the final result
+  const fetchResult = async () => {
+    if (!taskId) return;
+    
+    try {
+      const response = await fetch(`http://localhost:5000/process/result/${taskId}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log("Result not ready yet, continuing to poll");
+          return; // Continue polling if result not ready
+        }
+        throw new Error(`Failed to fetch result: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Result data received:", {
+        status: data.status,
+        hasLatex: !!data.latex,
+        hasPdf: !!data.pdf,
+        latexLength: data.latex?.length || 0,
+        pdfLength: data.pdf?.length || 0
+      });
+      
+      // Only process the result if it has both LaTeX and either PDF or an error
+      if (data.latex && (data.pdf || data.status === 'error')) {
+        setResult(data);
+        setActiveStep(4); // Move to result step
+        // Wait a moment before stopping the processing overlay
+        setTimeout(() => {
+          setIsProcessing(false);
+          setTaskId(null);
+        }, 1500);
+      } else {
+        console.log("Incomplete result, continuing to poll", data);
+      }
+    } catch (error) {
+      console.error("Error fetching result:", error);
+      setError(`Failed to retrieve result: ${error.message}`);
+      // Keep processing state active to show error in overlay
+    }
+  };
+  
+  // Handle resume upload
+  const handleResumeUpload = (text, pdfBase64, format = 'txt') => {
     setResumeData(text);
     setResumePdfBase64(pdfBase64);
+    setResumeFormat(format);
     setActiveStep(2);
   };
 
+  // Handle job description change
   const handleJobDescriptionChange = (text) => {
     setJobDescription(text);
   };
 
+  // Handle model change
   const handleModelChange = (model) => {
     setSelectedModel(model);
   };
-
+  
+  // Function to start processing
   const processResume = async () => {
     if (!resumeData || !jobDescription) {
       setError('Please provide both a resume and job description');
       return;
     }
-
+  
     setIsProcessing(true);
     setError(null);
-
+    setProgress(0); // Use your existing variable name
+    setStatus('starting'); // Use your existing variable name
+  
     try {
       const requestBody = {
         resume: resumePdfBase64 || resumeData,
@@ -48,32 +150,80 @@ function App() {
         model: selectedModel,
       };
       
+      // Start the processing job
       const response = await fetch('http://localhost:5000/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
       });
-
+  
       if (!response.ok) throw new Error('Failed to process resume');
-
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
       
-      setResult(data);
-      setActiveStep(4);
+      const initData = await response.json();
+      if (initData.error) throw new Error(initData.error);
+      
+      // Get the task ID
+      const taskId = initData.task_id;
+      if (!taskId) throw new Error('No task ID returned from server');
+      
+      // Continue polling for result
+      let isComplete = false;
+      const maxAttempts = 180; // Give up after ~2 minutes
+      let attempts = 0;
+      
+      while (!isComplete && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+        attempts++;
+        
+        try {
+          // Poll status endpoint
+          const statusResponse = await fetch('http://localhost:5000/process/status');
+          if (!statusResponse.ok) continue;
+          
+          const statusData = await statusResponse.json();
+          setProgress(statusData.progress || 0);
+          setStatus(statusData.status || '');
+          
+          // Check if processing is complete
+          if (statusData.status === 'completed' || statusData.status === 'error') {
+            isComplete = true;
+            
+            // Fetch the final result
+            const resultResponse = await fetch(`http://localhost:5000/process/result/${taskId}`);
+            if (!resultResponse.ok) throw new Error('Failed to retrieve result');
+            
+            const resultData = await resultResponse.json();
+            setResult(resultData);
+            setActiveStep(4);
+          }
+        } catch (err) {
+          console.error('Error checking status:', err);
+          // Continue polling on error
+        }
+      }
+      
+      // If we hit max attempts, show error
+      if (!isComplete) {
+        throw new Error('Processing timed out. Please try again.');
+      }
     } catch (err) {
       setError(err.message || 'An error occurred while processing your resume');
     } finally {
       setIsProcessing(false);
     }
   };
-
+  // Function to reset the app
   const resetApp = () => {
     setResumeData('');
     setResumePdfBase64(null);
+    setResumeFormat('txt');
     setJobDescription('');
     setSelectedModel('llama3');
     setResult(null);
+    setError(null);
+    setTaskId(null);
+    setProgress(0);
+    setStatus('');
     setActiveStep(1);
   };
 
@@ -84,7 +234,7 @@ function App() {
     { step: 3, label: 'Select Model', icon: '🤖' },
     { step: 4, label: 'Results', icon: '✅' }
   ];
-
+  
   return (
     <div className="app-container">
       <Header />
@@ -167,7 +317,11 @@ function App() {
             
             <div className="step-content">
               {activeStep === 1 && (
-                <ResumeUpload onUpload={handleResumeUpload} resumeData={resumeData} />
+                <ResumeUpload 
+                  onUpload={handleResumeUpload} 
+                  resumeData={resumeData}
+                  resumePdfBase64={resumePdfBase64}
+                />
               )}
               
               {activeStep === 2 && (
@@ -176,6 +330,7 @@ function App() {
                   onChange={handleJobDescriptionChange} 
                   onBack={() => setActiveStep(1)}
                   onNext={() => setActiveStep(3)}
+                  isValid={jobDescription.trim().length > 50}
                 />
               )}
               
@@ -279,9 +434,16 @@ function App() {
       <Footer />
 
       {/* Render ProcessingOverlay over the app when processing */}
-      <ProcessingOverlay isProcessing={isProcessing} />
+      {isProcessing && (
+        <ProcessingOverlay 
+          isProcessing={isProcessing}
+          progress={progress}
+          status={status}
+          error={error}
+        />
+      )}
     </div>
   );
-}
+};
 
 export default App;

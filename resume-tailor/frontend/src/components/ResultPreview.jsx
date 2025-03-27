@@ -11,13 +11,23 @@ const ResultPreview = ({ result, onBack, onReset }) => {
   const [pdfZoom, setPdfZoom] = useState(1.0);
   const [copied, setCopied] = useState(false);
   const [summaryExpanded, setSummaryExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState('Preparing your documents...');
+  const [pdfLoadError, setPdfLoadError] = useState(null);
   
   const pdfContainerRef = useRef(null);
   const latexCodeRef = useRef(null);
   
   // Process the PDF data when the component loads
   useEffect(() => {
-    console.log("Processing PDF data...");
+    console.log("Processing PDF data...", result);
+    setIsLoading(true);
+    
+    // If no result provided, show loading state
+    if (!result) {
+      setLoadingMessage('Waiting for processed documents...');
+      return;
+    }
     
     if (result?.pdf) {
       try {
@@ -33,16 +43,29 @@ const ResultPreview = ({ result, onBack, onReset }) => {
             : `data:application/pdf;base64,${result.pdf}`;
           
           setPdfDataUrl(dataUrl);
+          console.log("PDF data URL created successfully");
+          setPdfLoadError(null);
         } else {
           console.error("Invalid PDF data:", analysis);
+          setPdfDataUrl(null);
+          setPdfLoadError("The provided PDF data is invalid or corrupted.");
+          setShowDebug(true);
         }
       } catch (error) {
         console.error("Error processing PDF data:", error);
         setPdfDebugInfo({ error: error.message });
+        setPdfLoadError(`Error processing PDF: ${error.message}`);
+        setShowDebug(true);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       console.warn("No PDF data available in result");
       setPdfDebugInfo({ error: "No PDF data available" });
+      setPdfLoadError("The server did not return PDF data. You can still view and download the LaTeX code.");
+      setActiveTab('latex'); // Switch to LaTeX tab if PDF isn't available
+      setShowDebug(true);
+      setIsLoading(false);
     }
   }, [result]);
 
@@ -159,6 +182,59 @@ const ResultPreview = ({ result, onBack, onReset }) => {
   const formattedSummary = formatSummary(result?.summary);
   const summaryToShow = summaryExpanded ? formattedSummary : formattedSummary.slice(0, 1);
 
+  if (isLoading) {
+    return (
+      <div className="result-preview">
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p className="loading-text">{loadingMessage}</p>
+          <p className="loading-detail">This may take a moment as we prepare your documents</p>
+        </div>
+        <style jsx>{`
+          .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem 1rem;
+            background-color: #f9fafb;
+            border-radius: 0.75rem;
+            border: 1px dashed #d1d5db;
+            margin: 2rem 0;
+            text-align: center;
+          }
+          
+          .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+          }
+          
+          .loading-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+          }
+          
+          .loading-detail {
+            color: #6b7280;
+            font-size: 0.95rem;
+          }
+          
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   return (
     <div className="result-preview">
       <div className="success-banner">
@@ -182,23 +258,29 @@ const ResultPreview = ({ result, onBack, onReset }) => {
         </div>
         
         <div className="summary-content">
-          {summaryToShow.map((section, sectionIndex) => (
-            <div key={sectionIndex} className="summary-section">
-              {section.map((line, lineIndex) => {
-                // Check if this looks like a header line
-                const isHeader = lineIndex === 0 && (line.includes(':') || /^[A-Z]/.test(line));
-                
-                return isHeader ? (
-                  <h4 key={lineIndex} className="summary-section-title">{line}</h4>
-                ) : (
-                  <div key={lineIndex} className="summary-item">
-                    <span className="bullet-point">•</span>
-                    <p>{line}</p>
-                  </div>
-                );
-              })}
+          {summaryToShow.length > 0 ? (
+            summaryToShow.map((section, sectionIndex) => (
+              <div key={sectionIndex} className="summary-section">
+                {section.map((line, lineIndex) => {
+                  // Check if this looks like a header line
+                  const isHeader = lineIndex === 0 && (line.includes(':') || /^[A-Z]/.test(line));
+                  
+                  return isHeader ? (
+                    <h4 key={lineIndex} className="summary-section-title">{line}</h4>
+                  ) : (
+                    <div key={lineIndex} className="summary-item">
+                      <span className="bullet-point">•</span>
+                      <p>{line}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            ))
+          ) : (
+            <div className="empty-summary">
+              <p>No detailed summary available.</p>
             </div>
-          ))}
+          )}
           
           {formattedSummary.length > 1 && !summaryExpanded && (
             <button 
@@ -212,12 +294,15 @@ const ResultPreview = ({ result, onBack, onReset }) => {
       </div>
       
       {/* Warning Banner (if issues detected) */}
-      {result?.format_warning && (
+      {(result?.format_warning || pdfLoadError) && (
         <div className="warning-banner">
           <div className="warning-icon">⚠️</div>
           <div className="warning-message">
-            <h4>{result.format_warning}</h4>
-            <p>Some formatting issues were detected and automatically corrected. Please review the final resume carefully.</p>
+            <h4>{result?.format_warning || "Document Generation Issue"}</h4>
+            <p>{pdfLoadError || "Some formatting issues were detected and automatically corrected. Please review the final resume carefully."}</p>
+            {pdfLoadError && (
+              <p className="action-suggestion">Try viewing the LaTeX code tab or checking the debug information for more details.</p>
+            )}
           </div>
         </div>
       )}
@@ -277,6 +362,11 @@ const ResultPreview = ({ result, onBack, onReset }) => {
                   <PDFViewer 
                     pdfData={pdfDataUrl} 
                     scale={1.0}
+                    onError={(error) => {
+                      console.error("PDFViewer error:", error);
+                      setPdfLoadError(`Failed to display PDF: ${error.message || "Unknown error"}`);
+                      setActiveTab('latex');
+                    }}
                   />
                 </div>
               </>
@@ -290,6 +380,13 @@ const ResultPreview = ({ result, onBack, onReset }) => {
                   {pdfDebugInfo && pdfDebugInfo.error && (
                     <div className="error-details">Error: {pdfDebugInfo.error}</div>
                   )}
+                  
+                  <button 
+                    className="action-button"
+                    onClick={() => setActiveTab('latex')}
+                  >
+                    View LaTeX Code Instead
+                  </button>
                 </div>
               </div>
             )}
@@ -331,6 +428,9 @@ const ResultPreview = ({ result, onBack, onReset }) => {
                   hasSummary: !!result?.summary,
                   summaryLength: result?.summary?.length || 0,
                   pdfMethod: result?.pdf_method || 'unknown',
+                  modelUsed: result?.model_used || 'unknown',
+                  processingTime: result?.processing_time || 0,
+                  status: result?.status || 'unknown',
                   evaluation: result?.evaluation || 'n/a'
                 }, null, 2)}
               </pre>
@@ -363,6 +463,7 @@ const ResultPreview = ({ result, onBack, onReset }) => {
                     </ul>
                   </li>
                   <li>Restart your Flask server</li>
+                  <li>Try using a different AI model</li>
                 </ol>
               </div>
             </div>
@@ -483,6 +584,38 @@ const ResultPreview = ({ result, onBack, onReset }) => {
         .warning-message p {
           color: #92400e;
           margin: 0;
+        }
+        
+        .action-suggestion {
+          margin-top: 0.75rem !important;
+          font-weight: 500;
+        }
+        
+        /* Empty state */
+        .empty-summary {
+          padding: 2rem;
+          text-align: center;
+          color: #6b7280;
+          background-color: #f9fafb;
+          border-radius: 0.5rem;
+        }
+        
+        /* Action button */
+        .action-button {
+          display: inline-block;
+          margin-top: 1rem;
+          padding: 0.5rem 1rem;
+          background-color: #2563eb;
+          color: white;
+          border: none;
+          border-radius: 0.25rem;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+        
+        .action-button:hover {
+          background-color: #1d4ed8;
         }
         
         /* Summary Card */
@@ -946,6 +1079,74 @@ const ResultPreview = ({ result, onBack, onReset }) => {
         
         .button-icon {
           font-size: 1.1rem;
+        }
+        
+        /* Debug styles */
+        .debug-view {
+          padding: 1.5rem;
+          background-color: #f8fafc;
+          height: 700px;
+          overflow: auto;
+        }
+        
+        .debug-title {
+          font-size: 1.4rem;
+          color: #1e293b;
+          margin-top: 0;
+          margin-bottom: 1.5rem;
+          border-bottom: 2px solid #cbd5e1;
+          padding-bottom: 0.5rem;
+        }
+        
+        .debug-section {
+          margin-bottom: 2rem;
+          background-color: white;
+          padding: 1.25rem;
+          border-radius: 0.5rem;
+          border: 1px solid #e2e8f0;
+        }
+        
+        .debug-subtitle {
+          font-size: 1.1rem;
+          color: #475569;
+          margin-top: 0;
+          margin-bottom: 1rem;
+        }
+        
+        .debug-code {
+          background-color: #1e293b;
+          color: #e2e8f0;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          font-family: 'Fira Code', monospace;
+          overflow-x: auto;
+          font-size: 0.85rem;
+          line-height: 1.5;
+        }
+        
+        .help-section {
+          background-color: #f0f9ff;
+          border: 1px solid #bae6fd;
+        }
+        
+        .debug-instructions {
+          color: #0c4a6e;
+        }
+        
+        .fix-steps {
+          margin-top: 0.5rem;
+          padding-left: 1.5rem;
+        }
+        
+        .fix-steps li {
+          margin-bottom: 0.5rem;
+        }
+        
+        .fix-steps code {
+          background-color: #e0f2fe;
+          padding: 0.2rem 0.4rem;
+          border-radius: 0.25rem;
+          font-size: 0.85rem;
         }
         
         /* Animations */
