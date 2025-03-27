@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.env
+.venv
+.virtualenv
+.python-version
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node/JavaScript
+node_modules/
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.npm
+.pnp
+.pnp.js
+.cache/
+.parcel-cache/
+dist/
+build/
+coverage/
+.next/
+.nuxt/
+.vite/
+
+# Flask
+instance/
+.webassets-cache
+flask_session/
+
+# Project specific
+vector_stores/
+*.log
+backend/app.log
+*.db
+*.sqlite3
+.cache/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
