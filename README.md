@@ -10,3 +10,7 @@ A personal exploration and experimentation repository for Large Language Models 
 [Parking Analysis with Object Detection and Local LLM's Ollama](https://github.com/Pavankunchala/LLM-Learn-PK/tree/main/ollama/parking_analysis)
 
 ![pk_ollama](https://github.com/Pavankunchala/LLM-Learn-PK/blob/main/assets/pk_ollama%20(1).gif)
+
+[Ocr With Vision Parsing and Ollama](https://github.com/Pavankunchala/LLM-Learn-PK/tree/main/vision-parsing)
+
+![ocr-vision](https://github.com/Pavankunchala/LLM-Learn-PK/blob/main/assets/ocr%20with%20vision%20parsing.gif)
