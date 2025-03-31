@@ -14,3 +14,7 @@ A personal exploration and experimentation repository for Large Language Models 
 [Ocr With Vision Parsing and Ollama](https://github.com/Pavankunchala/LLM-Learn-PK/tree/main/vision-parsing)
 
 ![ocr-vision](https://github.com/Pavankunchala/LLM-Learn-PK/blob/main/assets/ocr%20with%20vision%20parsing.gif)
+
+[CrewAI Documentation Agent using Ollama and Crawl4AI](https://github.com/Pavankunchala/LLM-Learn-PK/tree/main/Chainlit-apps/crewai-documentation-bot)
+
+![crewai-bot](https://github.com/Pavankunchala/LLM-Learn-PK/blob/main/assets/crewai%20documention%20agent.gif)
