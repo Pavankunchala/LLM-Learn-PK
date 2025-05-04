@@ -37,7 +37,7 @@ To provide an integrated web interface for defining detection zones (polygons) o
 
 1.  **Clone the repository:**
     ```bash
-   git submodule update --init --recursive https://github.com/Pavankunchala/LLM-Learn-PK.git -- path=polygon-zone-app
+    git submodule update --init --recursive https://github.com/Pavankunchala/LLM-Learn-PK.git -- path=polygon-zone-app
     cd polygon-zone-app/backend
     ```
 2.  **Create and activate a virtual environment (Recommended):**
