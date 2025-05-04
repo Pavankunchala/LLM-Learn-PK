@@ -1,0 +1,10 @@
+# backend/requirements.txt
+
+ultralytics
+torch
+supervision
+websockets
+aiohttp
+aiohttp-cors
+numpy
+opencv-python
