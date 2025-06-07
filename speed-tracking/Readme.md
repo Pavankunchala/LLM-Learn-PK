@@ -30,9 +30,22 @@ A Python script for real-time vehicle detection, tracking, and speed estimation 
 
 1. **Clone the repository**
 
-   ```bash
-   git clone <your-repo-url>
-   cd <your-repo-folder>
+```bash
+# 1. Create a new folder and init
+mkdir speed-tracking
+cd speed-tracking
+git init
+
+# 2. Add the remote and enable sparse checkout
+git remote add origin https://github.com/Pavankunchala/LLM-Learn-PK.git
+git config core.sparseCheckout true
+
+# 3. Specify the folder you want
+echo "speed-tracking/*" > .git/info/sparse-checkout
+
+# 4. Pull just that folder
+git pull origin main
+
    ```
 
 2. **Create a virtual environment (optional but recommended)**
